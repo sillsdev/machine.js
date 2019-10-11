@@ -11,7 +11,7 @@ install:
   - ps: Install-Product node $env:nodejs_version
   - ps: '"//registry.npmjs.org/:_authToken=$env:npm_auth_token`n" | out-file "$env:userprofile\.npmrc" -Encoding ASCII'
   - npm whoami
-  - npm --loglevel=error install
+  - npm install
 build: off
 test_script:
   - npm run test:ci
@@ -19,5 +19,5 @@ test_script:
       $wc = New-Object 'System.Net.WebClient'
       $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\junit.xml))
 deploy_script:
-  - npm version --no-git-tag-version $env:APPVEYOR_BUILD_VERSION
+  - npm version --no-git-tag-version %APPVEYOR_BUILD_VERSION%
   - IF "%publish_packages%"=="true" npm publish --access public
