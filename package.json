@@ -21,7 +21,7 @@
     "machine",
     "translation"
   ],
-  "author": "Damien Daspit",
+  "author": "SIL International",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sillsdev/machine.js/issues"
