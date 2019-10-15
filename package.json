@@ -12,7 +12,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sillsdev/machine.git"
+    "url": "git+https://github.com/sillsdev/machine.js.git"
   },
   "keywords": [
     "natural",
@@ -24,9 +24,9 @@
   "author": "Damien Daspit",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/sillsdev/machine/issues"
+    "url": "https://github.com/sillsdev/machine.js/issues"
   },
-  "homepage": "https://github.com/sillsdev/machine/tree/master/src/SIL.Machine.TS",
+  "homepage": "https://github.com/sillsdev/machine.js",
   "devDependencies": {
     "@types/jest": "^24.0.18",
     "@types/xregexp": "^3.0.29",
