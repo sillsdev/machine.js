@@ -1,4 +1,4 @@
-version: 2.1.0-{build}
+version: { build }
 pull_requests:
   do_not_increment_build_number: true
 branches:
@@ -19,5 +19,4 @@ test_script:
       $wc = New-Object 'System.Net.WebClient'
       $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\junit.xml))
 deploy_script:
-  - npm version --no-git-tag-version %APPVEYOR_BUILD_VERSION%
-  - IF "%publish_packages%"=="true" npm publish --access public
+  - IF "%APPVEYOR_REPO_TAG%"=="true" npm publish --access public
