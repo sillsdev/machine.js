@@ -36,14 +36,14 @@ export class RemoteTranslationEngine implements InteractiveTranslationEngine {
     return await this.webApiClient.translateNBest(this.projectId, n, segment);
   }
 
-  async translateInteractively(n: number, segment: string[]): Promise<InteractiveTranslationSession> {
+  async translateInteractively(segment: string[]): Promise<InteractiveTranslationSession> {
     let results: HybridInteractiveTranslationResult;
     if (segment.length > MAX_SEGMENT_LENGTH) {
       results = new HybridInteractiveTranslationResult(new WordGraph());
     } else {
       results = await this.webApiClient.translateInteractively(this.projectId, segment);
     }
-    return new RemoteInteractiveTranslationSession(this.webApiClient, this.ecm, this.projectId, n, segment, results);
+    return new RemoteInteractiveTranslationSession(this.webApiClient, this.ecm, this.projectId, segment, results);
   }
 
   train(): Observable<ProgressStatus> {

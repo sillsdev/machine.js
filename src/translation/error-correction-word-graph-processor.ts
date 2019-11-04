@@ -1,5 +1,4 @@
 ﻿import { PriorityQueue } from 'typescript-collections';
-
 import { LOG_ZERO } from '../statistics/log-space';
 import { EcmScoreInfo } from './ecm-score-info';
 import { ErrorCorrectionModel } from './error-correction-model';
@@ -35,7 +34,7 @@ export class ErrorCorrectionWordGraphProcessor {
     this.initArcs();
   }
 
-  correct(prefix: string[], isLastWordComplete: boolean, n: number): TranslationResult[] {
+  correct(prefix: string[], isLastWordComplete: boolean): void {
     // get valid portion of the processed prefix vector
     let validProcPrefixCount = 0;
     for (let i = 0; i < this.prevPrefix.length; i++) {
@@ -84,7 +83,9 @@ export class ErrorCorrectionWordGraphProcessor {
 
     this.prevPrefix = prefix.slice();
     this.prevIsLastWordComplete = isLastWordComplete;
+  }
 
+  *getResults(): IterableIterator<TranslationResult> {
     const queue = new PriorityQueue<Hypothesis>((x, y) => {
       if (x.score < y.score) {
         return -1;
@@ -97,13 +98,11 @@ export class ErrorCorrectionWordGraphProcessor {
     this.getStateHypotheses(queue);
     this.getSubStateHypotheses(queue);
 
-    const results: TranslationResult[] = [];
-    for (const hypothesis of this.nbestSearch(n, queue)) {
+    for (const hypothesis of this.search(queue)) {
       const builder = new TranslationResultBuilder();
-      this.buildCorrectionFromHypothesis(builder, prefix, isLastWordComplete, hypothesis);
-      results.push(builder.toResult(this.sourceSegment, prefix.length));
+      this.buildCorrectionFromHypothesis(builder, this.prevPrefix, this.prevIsLastWordComplete, hypothesis);
+      yield builder.toResult(this.sourceSegment, this.prevPrefix.length);
     }
-    return results;
   }
 
   private initStates(): void {
@@ -265,8 +264,7 @@ export class ErrorCorrectionWordGraphProcessor {
     return !arc.isUnknown && arc.wordConfidences.some(c => c < this.confidenceThreshold);
   }
 
-  private nbestSearch(n: number, queue: PriorityQueue<Hypothesis>): Hypothesis[] {
-    const nbest: Hypothesis[] = [];
+  private *search(queue: PriorityQueue<Hypothesis>): IterableIterator<Hypothesis> {
     while (!queue.isEmpty()) {
       const hypothesis = queue.dequeue();
       if (hypothesis == null) {
@@ -276,16 +274,10 @@ export class ErrorCorrectionWordGraphProcessor {
         hypothesis.arcs.length === 0 ? hypothesis.startState : hypothesis.arcs[hypothesis.arcs.length - 1].nextState;
 
       if (this.wordGraph.finalStates.has(lastState)) {
-        nbest.push(hypothesis);
-        if (nbest.length === n) {
-          break;
-        }
+        yield hypothesis;
       } else if (this.confidenceThreshold <= 0) {
         hypothesis.arcs.push(...this.wordGraph.getBestPathFromStateToFinalState(lastState));
-        nbest.push(hypothesis);
-        if (nbest.length === n) {
-          break;
-        }
+        yield hypothesis;
       } else {
         const score = hypothesis.score - this.wordGraphWeight * this.restScores[lastState];
         const arcIndices = this.wordGraph.getNextArcIndices(lastState);
@@ -311,14 +303,10 @@ export class ErrorCorrectionWordGraphProcessor {
 
         if (!enqueuedArc && (hypothesis.startArcIndex !== -1 || hypothesis.arcs.length > 0)) {
           hypothesis.arcs.push(...this.wordGraph.getBestPathFromStateToFinalState(lastState));
-          nbest.push(hypothesis);
-          if (nbest.length === n) {
-            break;
-          }
+          yield hypothesis;
         }
       }
     }
-    return nbest;
   }
 
   private buildCorrectionFromHypothesis(

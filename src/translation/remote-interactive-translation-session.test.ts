@@ -1,3 +1,4 @@
+import { genSequence } from 'gensequence';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { createRange, Range } from '../annotations/range';
 import { WebApiClient } from '../web-api/web-api-client';
@@ -14,34 +15,38 @@ import { WordGraphArc } from './word-graph-arc';
 describe('RemoteInteractiveTranslationSession', () => {
   it('empty prefix', () => {
     const env = new TestEnvironment();
-    const result = env.session.currentResults[0];
+    const result = genSequence(env.session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
   it('add one complete word to prefix', () => {
     const env = new TestEnvironment();
-    const result = env.session.appendToPrefix('In', true)[0];
+    env.session.appendToPrefix('In', true);
+    const result = genSequence(env.session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
   it('add one partial word to prefix', () => {
     const env = new TestEnvironment();
     env.session.appendToPrefix('In', true);
-    const result = env.session.appendToPrefix('t', false)[0];
+    env.session.appendToPrefix('t', false);
+    const result = genSequence(env.session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
   it('remove one word from prefix', () => {
     const env = new TestEnvironment();
     env.session.appendWordsToPrefix(['In', 'the', 'beginning']);
-    const result = env.session.setPrefix(['In', 'the'], true)[0];
+    env.session.setPrefix(['In', 'the'], true);
+    const result = genSequence(env.session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
   it('remove entire prefix', () => {
     const env = new TestEnvironment();
     env.session.appendWordsToPrefix(['In', 'the', 'beginning']);
-    const result = env.session.setPrefix([], true)[0];
+    env.session.setPrefix([], true);
+    const result = genSequence(env.session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
@@ -59,7 +64,6 @@ describe('RemoteInteractiveTranslationSession', () => {
       instance(mockedRestClient),
       new ErrorCorrectionModel(),
       'project01',
-      1,
       sourceSegment,
       new HybridInteractiveTranslationResult(new WordGraph())
     );
@@ -469,7 +473,6 @@ class TestEnvironment {
       instance(this.mockedRestClient),
       new ErrorCorrectionModel(),
       'project01',
-      1,
       sourceSegment,
       result
     );

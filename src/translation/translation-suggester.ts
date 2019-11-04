@@ -3,5 +3,10 @@ import { TranslationSuggestion } from './translation-suggestion';
 
 export interface TranslationSuggester {
   confidenceThreshold: number;
-  getSuggestion(prefixCount: number, isLastWordComplete: boolean, result: TranslationResult): TranslationSuggestion;
+  getSuggestions(
+    n: number,
+    prefixCount: number,
+    isLastWordComplete: boolean,
+    results: IterableIterator<TranslationResult>
+  ): TranslationSuggestion[];
 }

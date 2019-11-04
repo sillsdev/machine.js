@@ -1,6 +1,5 @@
 import { Observable, of, throwError } from 'rxjs';
-import { takeWhileInclusive } from 'rxjs-take-while-inclusive';
-import { catchError, expand, filter, map, mergeMap, startWith } from 'rxjs/operators';
+import { catchError, expand, filter, map, mergeMap, startWith, takeWhile } from 'rxjs/operators';
 import { createRange, Range } from '../annotations/range';
 import { HybridInteractiveTranslationResult } from '../translation/hybrid-interactive-translation-result';
 import { Phrase } from '../translation/phrase';
@@ -105,7 +104,7 @@ export class WebApiClient {
       }),
       filter(buildDto => buildDto != null),
       map(buildDto => buildDto as BuildDto),
-      takeWhileInclusive(buildDto => buildDto.state === BuildStates.Pending || buildDto.state === BuildStates.Active)
+      takeWhile(buildDto => buildDto.state === BuildStates.Pending || buildDto.state === BuildStates.Active, true)
     );
   }
 
