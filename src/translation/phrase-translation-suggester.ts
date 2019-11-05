@@ -9,6 +9,7 @@ const ALL_PUNCT_REGEXP = XRegExp('^\\p{P}*$');
 
 export class PhraseTranslationSuggester implements TranslationSuggester {
   confidenceThreshold: number = 0;
+  breakOnPunctuation: boolean = true;
 
   getSuggestions(
     n: number,
@@ -17,6 +18,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
     results: IterableIterator<TranslationResult>
   ): TranslationSuggestion[] {
     const suggestions: TranslationSuggestion[] = [];
+    const suggestionWordArrays: string[][] = [];
     for (const result of results) {
       let startingJ = prefixCount;
       if (!isLastWordComplete) {
@@ -38,52 +40,56 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
       let minConfidence = -1;
       const indices: number[] = [];
       const words: string[] = [];
+      let hitPunctuation = false;
       for (; k < result.phrases.length; k++) {
         const phrase = result.phrases[k];
         if (phrase.confidence >= this.confidenceThreshold) {
-          let hitBreakingWord = false;
           for (let j = startingJ; j < phrase.targetSegmentCut; j++) {
             const word = result.targetSegment[j];
-            const sources = result.wordSources[j];
-            if (sources === TranslationSources.None || ALL_PUNCT_REGEXP.test(word)) {
-              hitBreakingWord = true;
-              break;
+            if (ALL_PUNCT_REGEXP.test(word)) {
+              hitPunctuation = true;
             }
-            indices.push(j);
+            if (!this.breakOnPunctuation || !hitPunctuation) {
+              indices.push(j);
+              const wordConfidence = result.wordConfidences[j];
+              if (minConfidence < 0 || wordConfidence < minConfidence) {
+                minConfidence = wordConfidence;
+              }
+            }
             words.push(word);
           }
-          if (minConfidence < 0 || phrase.confidence < minConfidence) {
-            minConfidence = phrase.confidence;
-          }
           startingJ = phrase.targetSegmentCut;
-          if (hitBreakingWord) {
-            break;
-          }
         } else {
           break;
         }
       }
 
       if (indices.length === 0) {
-        break;
+        if (words.length > 0) {
+          continue;
+        } else {
+          break;
+        }
       }
+
       let isDuplicate = false;
-      for (const suggestion of suggestions) {
-        const suffixArray = new GeneralizedSuffixArray([suggestion.targetWords, words]);
+      for (const suggestionWordArray of suggestionWordArrays) {
+        const suffixArray = new GeneralizedSuffixArray([suggestionWordArray, words]);
         const lcs = suffixArray.longestCommonSubsequence();
         if (lcs.length === words.length) {
           isDuplicate = true;
           break;
         }
       }
-      if (isDuplicate) {
-        continue;
-      }
-      suggestions.push(new TranslationSuggestion(result, indices, minConfidence < 0 ? 0 : minConfidence));
-      if (suggestions.length === n) {
-        break;
+      if (!isDuplicate) {
+        suggestionWordArrays.push(words);
+        suggestions.push(new TranslationSuggestion(result, indices, minConfidence < 0 ? 0 : minConfidence));
+        if (suggestions.length === n) {
+          break;
+        }
       }
     }
+
     return suggestions;
   }
 }
