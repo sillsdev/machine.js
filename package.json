@@ -43,7 +43,6 @@
     "gensequence": "^2.1.3",
     "mnemonist": "^0.30.0",
     "rxjs": "^6.5.2",
-    "typescript-collections": "^1.3.2",
     "xregexp": "^4.2.4"
   },
   "files": [

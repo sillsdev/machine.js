@@ -1,4 +1,4 @@
-﻿import { PriorityQueue } from 'typescript-collections';
+﻿import { MaxHeap } from 'mnemonist/heap';
 import { LOG_ZERO } from '../statistics/log-space';
 import { EcmScoreInfo } from './ecm-score-info';
 import { ErrorCorrectionModel } from './error-correction-model';
@@ -86,7 +86,7 @@ export class ErrorCorrectionWordGraphProcessor {
   }
 
   *getResults(): IterableIterator<TranslationResult> {
-    const queue = new PriorityQueue<Hypothesis>((x, y) => {
+    const heap = new MaxHeap<Hypothesis>((x, y) => {
       if (x.score < y.score) {
         return -1;
       } else if (x.score > y.score) {
@@ -95,10 +95,10 @@ export class ErrorCorrectionWordGraphProcessor {
         return 0;
       }
     });
-    this.getStateHypotheses(queue);
-    this.getSubStateHypotheses(queue);
+    this.getStateHypotheses(heap);
+    this.getSubStateHypotheses(heap);
 
-    for (const hypothesis of this.search(queue)) {
+    for (const hypothesis of this.search(heap)) {
       const builder = new TranslationResultBuilder();
       this.buildCorrectionFromHypothesis(builder, this.prevPrefix, this.prevIsLastWordComplete, hypothesis);
       yield builder.toResult(this.sourceSegment, this.prevPrefix.length);
@@ -232,17 +232,17 @@ export class ErrorCorrectionWordGraphProcessor {
     }
   }
 
-  private getStateHypotheses(queue: PriorityQueue<Hypothesis>): void {
+  private getStateHypotheses(heap: MaxHeap<Hypothesis>): void {
     for (const state of this.statesInvolvedInArcs) {
       const restScore = this.restScores[state];
       const bestScores = this.stateBestScores[state];
 
       const score = bestScores[bestScores.length - 1] + this.wordGraphWeight * restScore;
-      queue.enqueue(new Hypothesis(score, state));
+      heap.push(new Hypothesis(score, state));
     }
   }
 
-  private getSubStateHypotheses(queue: PriorityQueue<Hypothesis>): void {
+  private getSubStateHypotheses(heap: MaxHeap<Hypothesis>): void {
     for (let arcIndex = 0; arcIndex < this.wordGraph.arcs.length; arcIndex++) {
       const arc = this.wordGraph.arcs[arcIndex];
       if (arc.words.length > 1 && !this.isArcPruned(arc)) {
@@ -254,7 +254,7 @@ export class ErrorCorrectionWordGraphProcessor {
             this.wordGraphWeight * wordGraphScore +
             this.ecmWeight * -esi.scores[esi.scores.length - 1] +
             this.wordGraphWeight * this.restScores[arc.nextState];
-          queue.enqueue(new Hypothesis(score, arc.nextState, arcIndex, i));
+          heap.push(new Hypothesis(score, arc.nextState, arcIndex, i));
         }
       }
     }
@@ -264,9 +264,9 @@ export class ErrorCorrectionWordGraphProcessor {
     return !arc.isUnknown && arc.wordConfidences.some(c => c < this.confidenceThreshold);
   }
 
-  private *search(queue: PriorityQueue<Hypothesis>): IterableIterator<Hypothesis> {
-    while (!queue.isEmpty()) {
-      const hypothesis = queue.dequeue();
+  private *search(heap: MaxHeap<Hypothesis>): IterableIterator<Hypothesis> {
+    while (heap.size > 0) {
+      const hypothesis = heap.pop();
       if (hypothesis == null) {
         break;
       }
@@ -297,7 +297,7 @@ export class ErrorCorrectionWordGraphProcessor {
           newHypothesis.score += arc.score;
           newHypothesis.score += this.restScores[arc.nextState];
           newHypothesis.arcs.push(arc);
-          queue.enqueue(newHypothesis);
+          heap.push(newHypothesis);
           enqueuedArc = true;
         }
 
