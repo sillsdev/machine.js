@@ -1,4 +1,3 @@
-import { GeneralizedSuffixArray } from 'mnemonist/suffix-array';
 import XRegExp from 'xregexp';
 import { TranslationResult } from './translation-result';
 import { TranslationSources } from './translation-sources';
@@ -18,7 +17,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
     results: IterableIterator<TranslationResult>
   ): TranslationSuggestion[] {
     const suggestions: TranslationSuggestion[] = [];
-    const suggestionWordArrays: string[][] = [];
+    const suggestionStrs: string[] = [];
     for (const result of results) {
       let startingJ = prefixCount;
       if (!isLastWordComplete) {
@@ -39,7 +38,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
 
       let minConfidence = -1;
       const indices: number[] = [];
-      const words: string[] = [];
+      let newSuggestionStr: string = '';
       let hitPunctuation = false;
       for (; k < result.phrases.length; k++) {
         const phrase = result.phrases[k];
@@ -56,7 +55,10 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
                 minConfidence = wordConfidence;
               }
             }
-            words.push(word);
+            if (newSuggestionStr.length > 0) {
+              newSuggestionStr += '\u0001';
+            }
+            newSuggestionStr += word;
           }
           startingJ = phrase.targetSegmentCut;
         } else {
@@ -65,7 +67,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
       }
 
       if (indices.length === 0) {
-        if (words.length > 0) {
+        if (newSuggestionStr.length > 0) {
           continue;
         } else {
           break;
@@ -73,20 +75,14 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
       }
 
       let isDuplicate = false;
-      for (const suggestionWordArray of suggestionWordArrays) {
-        if (words.length > suggestionWordArray.length) {
-          continue;
-        }
-
-        const suffixArray = new GeneralizedSuffixArray([suggestionWordArray, words]);
-        const lcs = suffixArray.longestCommonSubsequence();
-        if (lcs.length === words.length) {
+      for (const suggestionStr of suggestionStrs) {
+        if (suggestionStr.length >= newSuggestionStr.length && suggestionStr.includes(newSuggestionStr)) {
           isDuplicate = true;
           break;
         }
       }
       if (!isDuplicate) {
-        suggestionWordArrays.push(words);
+        suggestionStrs.push(newSuggestionStr);
         suggestions.push(new TranslationSuggestion(result, indices, minConfidence < 0 ? 0 : minConfidence));
         if (suggestions.length === n) {
           break;
