@@ -74,6 +74,10 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
 
       let isDuplicate = false;
       for (const suggestionWordArray of suggestionWordArrays) {
+        if (words.length > suggestionWordArray.length) {
+          continue;
+        }
+
         const suffixArray = new GeneralizedSuffixArray([suggestionWordArray, words]);
         const lcs = suffixArray.longestCommonSubsequence();
         if (lcs.length === words.length) {
