@@ -42,8 +42,13 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
       let hitPunctuation = false;
       for (; k < result.phrases.length; k++) {
         const phrase = result.phrases[k];
+        let isUnknown = false;
         if (phrase.confidence >= this.confidenceThreshold) {
           for (let j = startingJ; j < phrase.targetSegmentCut; j++) {
+            if (result.wordSources[j] === TranslationSources.None) {
+              isUnknown = true;
+              break;
+            }
             const word = result.targetSegment[j];
             if (ALL_PUNCT_REGEXP.test(word)) {
               hitPunctuation = true;
@@ -60,6 +65,10 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
             }
             newSuggestionStr += word;
           }
+          if (isUnknown) {
+            break;
+          }
+
           startingJ = phrase.targetSegmentCut;
         } else {
           break;
@@ -70,6 +79,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         if (newSuggestionStr.length > 0) {
           continue;
         } else {
+          // the suggestion is empty, so probably all suggestions after this one are bad
           break;
         }
       }
