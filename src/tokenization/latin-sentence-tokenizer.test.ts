@@ -1,45 +1,73 @@
-import { LatinWordTokenizer } from './latin-word-tokenizer';
+import { LatinSentenceTokenizer } from './latin-sentence-tokenizer';
 
-describe('LatinWordTokenizer', () => {
+describe('LatinSentenceTokenizer', () => {
   it('empty string', () => {
-    const tokenizer = new LatinWordTokenizer();
+    const tokenizer = new LatinSentenceTokenizer();
     expect(tokenizer.tokenizeToStrings('')).toEqual([]);
   });
 
-  it('whitespace-only string', () => {
-    const tokenizer = new LatinWordTokenizer();
-    expect(tokenizer.tokenizeToStrings(' ')).toEqual([]);
+  it('single line', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is a test.')).toEqual(['This is a test.']);
   });
 
-  it('word with punctuation at the end', () => {
-    const tokenizer = new LatinWordTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is a test.')).toEqual(['This', 'is', 'a', 'test', '.']);
-  });
-
-  it('word with punctuation at the beginning', () => {
-    const tokenizer = new LatinWordTokenizer();
-    expect(tokenizer.tokenizeToStrings('Is this a "test"?')).toEqual(['Is', 'this', 'a', '"', 'test', '"', '?']);
-  });
-
-  it('word with internal punctuation', () => {
-    const tokenizer = new LatinWordTokenizer();
-    expect(tokenizer.tokenizeToStrings("This isn't a test.")).toEqual(['This', "isn't", 'a', 'test', '.']);
-  });
-
-  it('string with abbreviations', () => {
-    const tokenizer = new LatinWordTokenizer(['mr', 'dr', 'ms']);
-    expect(tokenizer.tokenizeToStrings('Mr. Smith went to Washington.')).toEqual([
-      'Mr.',
-      'Smith',
-      'went',
-      'to',
-      'Washington',
-      '.'
+  it('multiple lines', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is the first sentence.\nThis is the second sentence.')).toEqual([
+      'This is the first sentence.',
+      'This is the second sentence.'
     ]);
   });
 
-  it('string with a non-ASCII character', () => {
-    const tokenizer = new LatinWordTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is—a test.')).toEqual(['This', 'is', '—', 'a', 'test', '.']);
+  it('two sentences', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is the first sentence. This is the second sentence.')).toEqual([
+      'This is the first sentence.',
+      'This is the second sentence.'
+    ]);
+  });
+
+  it('sentence with quotes', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('"This is the first sentence." This is the second sentence.')).toEqual([
+      '"This is the first sentence."',
+      'This is the second sentence.'
+    ]);
+  });
+
+  it('sentence with an internal quotation', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('"This is the first sentence!" he said. This is the second sentence.')).toEqual([
+      '"This is the first sentence!" he said.',
+      'This is the second sentence.'
+    ]);
+  });
+
+  it('sentence with parentheses', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is the first sentence. (This is the second sentence.)')).toEqual([
+      'This is the first sentence.',
+      '(This is the second sentence.)'
+    ]);
+  });
+
+  it('sentence with abbreviations', () => {
+    const tokenizer = new LatinSentenceTokenizer(['mr', 'dr', 'ms']);
+    expect(tokenizer.tokenizeToStrings('Mr. Smith went to Washington. This is the second sentence.')).toEqual([
+      'Mr. Smith went to Washington.',
+      'This is the second sentence.'
+    ]);
+  });
+
+  it('incomplete sentence', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is an incomplete sentence ')).toEqual(['This is an incomplete sentence ']);
+  });
+
+  it('complete sentence with a space at the end', () => {
+    const tokenizer = new LatinSentenceTokenizer();
+    expect(tokenizer.tokenizeToStrings('"This is a complete sentence." \n')).toEqual([
+      '"This is a complete sentence."'
+    ]);
   });
 });

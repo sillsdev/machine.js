@@ -1,73 +1,131 @@
-import { LatinSentenceTokenizer } from './latin-sentence-tokenizer';
+import { LatinWordTokenizer } from './latin-word-tokenizer';
 
-describe('LatinSentenceTokenizer', () => {
+describe('LatinWordTokenizer', () => {
   it('empty string', () => {
-    const tokenizer = new LatinSentenceTokenizer();
+    const tokenizer = new LatinWordTokenizer();
     expect(tokenizer.tokenizeToStrings('')).toEqual([]);
   });
 
-  it('single line', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is a test.')).toEqual(['This is a test.']);
+  it('whitespace-only string', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings(' ')).toEqual([]);
   });
 
-  it('multiple lines', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is the first sentence.\nThis is the second sentence.')).toEqual([
-      'This is the first sentence.',
-      'This is the second sentence.'
+  it('word with punctuation at the end', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is a test, also.')).toEqual(['This', 'is', 'a', 'test', ',', 'also', '.']);
+  });
+
+  it('word with punctuation at the beginning', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings('Is this a test? (yes)')).toEqual([
+      'Is',
+      'this',
+      'a',
+      'test',
+      '?',
+      '(',
+      'yes',
+      ')'
     ]);
   });
 
-  it('two sentences', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is the first sentence. This is the second sentence.')).toEqual([
-      'This is the first sentence.',
-      'This is the second sentence.'
+  it('word with internal punctuation', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings("This isn't a test.")).toEqual(['This', "isn't", 'a', 'test', '.']);
+  });
+
+  it('string with symbol', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings('He had $50.')).toEqual(['He', 'had', '$', '50', '.']);
+  });
+
+  it('string with abbreviations', () => {
+    const tokenizer = new LatinWordTokenizer(['mr', 'dr', 'ms']);
+    expect(tokenizer.tokenizeToStrings('Mr. Smith went to Washington.')).toEqual([
+      'Mr.',
+      'Smith',
+      'went',
+      'to',
+      'Washington',
+      '.'
     ]);
   });
 
-  it('sentence with quotes', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('"This is the first sentence." This is the second sentence.')).toEqual([
-      '"This is the first sentence."',
-      'This is the second sentence.'
+  it('string with quotes', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings('"This is a test."')).toEqual(['"', 'This', 'is', 'a', 'test', '.', '"']);
+  });
+
+  it('string with apostrophe not treated as single quote', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings("“Moses' cat said ‘Meow’ to the dog.”")).toEqual([
+      '“',
+      "Moses'",
+      'cat',
+      'said',
+      '‘',
+      'Meow',
+      '’',
+      'to',
+      'the',
+      'dog',
+      '.',
+      '”'
+    ]);
+
+    expect(tokenizer.tokenizeToStrings("i ha''on 'ot ano'.")).toEqual(['i', "ha''on", "'ot", "ano'", '.']);
+  });
+
+  it('string with apostrophe treated as single quote', () => {
+    const tokenizer = new LatinWordTokenizer();
+    tokenizer.treatApostropheAsSingleQuote = true;
+    expect(tokenizer.tokenizeToStrings("'Moses's cat said 'Meow' to the dog.'")).toEqual([
+      "'",
+      "Moses's",
+      'cat',
+      'said',
+      "'",
+      'Meow',
+      "'",
+      'to',
+      'the',
+      'dog',
+      '.',
+      "'"
     ]);
   });
 
-  it('sentence with an internal quotation', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('"This is the first sentence!" he said. This is the second sentence.')).toEqual([
-      '"This is the first sentence!" he said.',
-      'This is the second sentence.'
+  it('string with slash', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is a test/trial.')).toEqual([
+      'This',
+      'is',
+      'a',
+      'test',
+      '/',
+      'trial',
+      '.'
     ]);
   });
 
-  it('sentence with parentheses', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is the first sentence. (This is the second sentence.)')).toEqual([
-      'This is the first sentence.',
-      '(This is the second sentence.)'
+  it('string with angle bracket', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is a <<test>>.')).toEqual([
+      'This',
+      'is',
+      'a',
+      '<',
+      '<',
+      'test',
+      '>',
+      '>',
+      '.'
     ]);
   });
 
-  it('sentence with abbreviations', () => {
-    const tokenizer = new LatinSentenceTokenizer(['mr', 'dr', 'ms']);
-    expect(tokenizer.tokenizeToStrings('Mr. Smith went to Washington. This is the second sentence.')).toEqual([
-      'Mr. Smith went to Washington.',
-      'This is the second sentence.'
-    ]);
-  });
-
-  it('incomplete sentence', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is an incomplete sentence ')).toEqual(['This is an incomplete sentence ']);
-  });
-
-  it('complete sentence with a space at the end', () => {
-    const tokenizer = new LatinSentenceTokenizer();
-    expect(tokenizer.tokenizeToStrings('"This is a complete sentence." \n')).toEqual([
-      '"This is a complete sentence."'
-    ]);
+  it('string with a non-ASCII character', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenizeToStrings('This is—a test.')).toEqual(['This', 'is', '—', 'a', 'test', '.']);
   });
 });

@@ -4,9 +4,11 @@ import { createRange, Range } from '../annotations/range';
 import { WhitespaceTokenizer } from './whitespace-tokenizer';
 
 const PUNCT_REGEX: RegExp = XRegExp('^\\p{P}|\\p{S}|\\p{Cc}$');
-const INNER_WORD_PUNCT_REGEX: RegExp = XRegExp("^[&'\\-.:=?@\xAD\xB7\u2010\u2011\u2019\u2027]|_+");
+const INNER_WORD_PUNCT_REGEX: RegExp = XRegExp("^[&\\-.:=?@\xAD\xB7\u2010\u2011\u2019\u2027]|['_]+");
 
 export class LatinWordTokenizer extends WhitespaceTokenizer {
+  treatApostropheAsSingleQuote: boolean = false;
+
   private readonly abbreviations: Set<string>;
 
   constructor(abbreviations: string[] = []) {
@@ -23,10 +25,19 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
       while (i < charRange.end) {
         if (PUNCT_REGEX.test(data[i])) {
           if (wordStart === -1) {
-            tokens.push(createRange(i));
+            if (data[i] === "'" && !this.treatApostropheAsSingleQuote) {
+              wordStart = i;
+            } else {
+              tokens.push(createRange(i));
+            }
           } else if (innerWordPunct !== -1) {
-            tokens.push(createRange(wordStart, innerWordPunct));
-            tokens.push(createRange(innerWordPunct, i));
+            const innerPunctStr = data.substring(innerWordPunct, i);
+            if (innerPunctStr === "'" && !this.treatApostropheAsSingleQuote) {
+              tokens.push(createRange(wordStart, i));
+            } else {
+              tokens.push(createRange(wordStart, innerWordPunct));
+              tokens.push(createRange(innerWordPunct, i));
+            }
             wordStart = i;
           } else {
             const match = this.nextInnerWordPunct(data, i);
@@ -50,9 +61,10 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
 
       if (wordStart !== -1) {
         if (innerWordPunct !== -1) {
+          const innerPunctStr = data.substring(innerWordPunct, charRange.end);
           if (
-            data.substring(innerWordPunct, charRange.end) === '.' &&
-            this.abbreviations.has(data.substring(wordStart, innerWordPunct).toLowerCase())
+            (innerPunctStr === '.' && this.isAbbreviation(data, wordStart, innerWordPunct)) ||
+            (innerPunctStr === "'" && !this.treatApostropheAsSingleQuote)
           ) {
             tokens.push(createRange(wordStart, charRange.end));
           } else {
@@ -75,5 +87,9 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
     }
 
     return result[0];
+  }
+
+  private isAbbreviation(data: string, start: number, end: number): boolean {
+    return this.abbreviations.has(data.substring(start, end).toLowerCase());
   }
 }
