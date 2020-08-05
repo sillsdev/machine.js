@@ -28,16 +28,16 @@
   },
   "homepage": "https://github.com/sillsdev/machine.js",
   "devDependencies": {
-    "@types/jest": "^24.0.18",
+    "@types/jest": "^24.9.1",
     "@types/xregexp": "^3.0.29",
-    "jest": "^24.9.0",
-    "jest-junit": "^6.3.0",
+    "jest": "^26.2.2",
+    "jest-junit": "^11.1.0",
     "prettier": "^1.16.1",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^26.1.4",
     "ts-mockito": "^2.3.1",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.17.0",
-    "typescript": "^3.2.4"
+    "typescript": "^3.9.7"
   },
   "dependencies": {
     "gensequence": "^2.1.3",
