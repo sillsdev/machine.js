@@ -15,17 +15,17 @@ export abstract class StringDetokenizer implements Detokenizer {
     for (let i = 0; i < tokens.length; i++) {
       output += tokens[i];
 
-      let isAppendSpace = true;
+      let appendSeparator = true;
       if (i + 1 === ops.length) {
-        isAppendSpace = false;
+        appendSeparator = false;
       } else if (ops[i + 1] === DetokenizeOperation.MergeLeft || ops[i + 1] === DetokenizeOperation.MergeBoth) {
-        isAppendSpace = false;
+        appendSeparator = false;
       } else if (ops[i] === DetokenizeOperation.MergeRight || ops[i] === DetokenizeOperation.MergeBoth) {
-        isAppendSpace = false;
+        appendSeparator = false;
       }
 
-      if (isAppendSpace) {
-        output += ' ';
+      if (appendSeparator) {
+        output += this.getSeparator(tokens, ops, i);
       }
     }
     return output;
@@ -36,4 +36,8 @@ export abstract class StringDetokenizer implements Detokenizer {
   }
 
   protected abstract getOperation(ctxt: any, token: string): DetokenizeOperation;
+
+  protected getSeparator(_tokens: string[], _ops: DetokenizeOperation[], _index: number): string {
+    return ' ';
+  }
 }

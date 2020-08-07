@@ -44,6 +44,6 @@ describe('LatinWordDetokenizer', () => {
 
   it('array with angle bracket', () => {
     const detokenizer = new LatinWordDetokenizer();
-    expect(detokenizer.detokenize(['This', 'is', 'a', '<', '<', 'test', '>', '>', '.'])).toEqual('This is a <<test>>.');
+    expect(detokenizer.detokenize(['This', 'is', 'a', '<<', 'test', '>>', '.'])).toEqual('This is a <<test>>.');
   });
 });

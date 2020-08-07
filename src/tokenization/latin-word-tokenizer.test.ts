@@ -33,6 +33,8 @@ describe('LatinWordTokenizer', () => {
   it('word with internal punctuation', () => {
     const tokenizer = new LatinWordTokenizer();
     expect(tokenizer.tokenizeToStrings("This isn't a test.")).toEqual(['This', "isn't", 'a', 'test', '.']);
+
+    expect(tokenizer.tokenizeToStrings('He had $5,000.')).toEqual(['He', 'had', '$', '5,000', '.']);
   });
 
   it('string with symbol', () => {
@@ -111,17 +113,7 @@ describe('LatinWordTokenizer', () => {
 
   it('string with angle bracket', () => {
     const tokenizer = new LatinWordTokenizer();
-    expect(tokenizer.tokenizeToStrings('This is a <<test>>.')).toEqual([
-      'This',
-      'is',
-      'a',
-      '<',
-      '<',
-      'test',
-      '>',
-      '>',
-      '.'
-    ]);
+    expect(tokenizer.tokenizeToStrings('This is a <<test>>.')).toEqual(['This', 'is', 'a', '<<', 'test', '>>', '.']);
   });
 
   it('string with a non-ASCII character', () => {

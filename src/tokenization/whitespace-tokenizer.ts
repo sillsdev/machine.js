@@ -10,7 +10,7 @@ export class WhitespaceTokenizer extends StringTokenizer {
     const tokens: Range[] = [];
     let startIndex = -1;
     for (let i = range.start; i < range.end; i++) {
-      if (WHITESPACE_REGEX.test(data[i])) {
+      if (this.isWhitespace(data[i])) {
         if (startIndex !== -1) {
           tokens.push(createRange(startIndex, i));
         }
@@ -25,5 +25,9 @@ export class WhitespaceTokenizer extends StringTokenizer {
     }
 
     return tokens;
+  }
+
+  protected isWhitespace(c: string): boolean {
+    return WHITESPACE_REGEX.test(c) || c === '\u200b' || c === '\ufeff';
   }
 }

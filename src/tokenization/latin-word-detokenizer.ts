@@ -38,22 +38,21 @@ export class LatinWordDetokenizer extends StringDetokenizer {
 
   protected getOperation(ctxt: any, token: string): DetokenizeOperation {
     const quotes = ctxt as string[];
-    if (token.length === 1) {
-      if (MERGE_RIGHT_REGEX.test(token)) {
+    const c = token[0];
+    if (MERGE_RIGHT_REGEX.test(c)) {
+      return DetokenizeOperation.MergeRight;
+    } else if (QUOTATION_MARKS.has(c)) {
+      if (quotes.length === 0 || QUOTATION_MARKS.get(c) !== QUOTATION_MARKS.get(quotes[quotes.length - 1])) {
+        quotes.push(c);
         return DetokenizeOperation.MergeRight;
-      } else if (QUOTATION_MARKS.has(token)) {
-        if (quotes.length === 0 || QUOTATION_MARKS.get(token) !== QUOTATION_MARKS.get(quotes[quotes.length - 1])) {
-          quotes.push(token);
-          return DetokenizeOperation.MergeRight;
-        } else {
-          quotes.pop();
-          return DetokenizeOperation.MergeLeft;
-        }
-      } else if (token === '/' || token === '\\') {
-        return DetokenizeOperation.MergeBoth;
-      } else if (MERGE_LEFT_REGEX.test(token)) {
+      } else {
+        quotes.pop();
         return DetokenizeOperation.MergeLeft;
       }
+    } else if (c === '/' || c === '\\') {
+      return DetokenizeOperation.MergeBoth;
+    } else if (MERGE_LEFT_REGEX.test(c)) {
+      return DetokenizeOperation.MergeLeft;
     }
     return DetokenizeOperation.NoOperation;
   }
