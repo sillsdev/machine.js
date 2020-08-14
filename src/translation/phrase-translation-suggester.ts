@@ -14,7 +14,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
     n: number,
     prefixCount: number,
     isLastWordComplete: boolean,
-    results: IterableIterator<TranslationResult>
+    results: Iterable<TranslationResult>
   ): TranslationSuggestion[] {
     const suggestions: TranslationSuggestion[] = [];
     const suggestionStrs: string[] = [];
@@ -38,7 +38,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
 
       let minConfidence = -1;
       const indices: number[] = [];
-      let newSuggestionStr: string = '';
+      let numWords = 0;
       let hitPunctuation = false;
       for (; k < result.phrases.length; k++) {
         const phrase = result.phrases[k];
@@ -46,6 +46,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         if (phrase.confidence >= this.confidenceThreshold) {
           for (let j = startingJ; j < phrase.targetSegmentCut; j++) {
             if (result.wordSources[j] === TranslationSources.None) {
+              // hit an unknown word, so don't include any more words in this suggestion
               isUnknown = true;
               break;
             }
@@ -60,10 +61,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
                 minConfidence = wordConfidence;
               }
             }
-            if (newSuggestionStr.length > 0) {
-              newSuggestionStr += '\u0001';
-            }
-            newSuggestionStr += word;
+            numWords++;
           }
           if (isUnknown) {
             break;
@@ -71,12 +69,14 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
 
           startingJ = phrase.targetSegmentCut;
         } else {
+          // hit a phrase with a low confidence, so don't include any more words in this suggestion
           break;
         }
       }
 
       if (indices.length === 0) {
-        if (newSuggestionStr.length > 0) {
+        if (numWords > 0) {
+          // this is a good suggestion, it just starts with a punctuation, so keep looking for more suggestions
           continue;
         } else {
           // the suggestion is empty, so probably all suggestions after this one are bad
@@ -84,6 +84,9 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         }
       }
 
+      const newSuggestion = new TranslationSuggestion(result, indices, minConfidence < 0 ? 0 : minConfidence);
+      // make sure this suggestion isn't a duplicate of a better suggestion
+      const newSuggestionStr = newSuggestion.targetWords.join('\u0001');
       let isDuplicate = false;
       for (const suggestionStr of suggestionStrs) {
         if (suggestionStr.length >= newSuggestionStr.length && suggestionStr.includes(newSuggestionStr)) {
@@ -93,7 +96,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
       }
       if (!isDuplicate) {
         suggestionStrs.push(newSuggestionStr);
-        suggestions.push(new TranslationSuggestion(result, indices, minConfidence < 0 ? 0 : minConfidence));
+        suggestions.push(newSuggestion);
         if (suggestions.length === n) {
           break;
         }
