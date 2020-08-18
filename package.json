@@ -6,7 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "test": "jest",
-    "build": "tsc --project tsconfig.build.json",
+    "build": "tsc --project tsconfig.build.json && downlevel-dts lib ts3.4/lib",
     "prepare": "npm run build",
     "test:ci": "jest --config jest.config.js --ci --reporters=jest-junit"
   },
@@ -30,6 +30,7 @@
   "devDependencies": {
     "@types/jest": "^24.9.1",
     "@types/xregexp": "^3.0.29",
+    "downlevel-dts": "^0.6.0",
     "jest": "^26.2.2",
     "jest-junit": "^11.1.0",
     "prettier": "^1.16.1",
@@ -48,6 +49,14 @@
   "files": [
     "LICENSE",
     "README.md",
-    "lib/**/*"
-  ]
+    "lib/**/*",
+    "ts3.4/**/*"
+  ],
+  "typesVersions": {
+    "<3.9": {
+      "*": [
+        "ts3.4/*"
+      ]
+    }
+  }
 }
