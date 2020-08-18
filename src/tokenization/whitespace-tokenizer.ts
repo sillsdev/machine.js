@@ -1,12 +1,9 @@
-import XRegExp from 'xregexp';
-
 import { createRange, Range } from '../annotations/range';
 import { StringTokenizer } from './string-tokenizer';
-
-const WHITESPACE_REGEX: RegExp = XRegExp('^\\p{Z}$');
+import { isWhitespace } from './unicode';
 
 export class WhitespaceTokenizer extends StringTokenizer {
-  tokenize(data: string, range: Range = createRange(0, data.length)): Range[] {
+  tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {
     const tokens: Range[] = [];
     let startIndex = -1;
     for (let i = range.start; i < range.end; i++) {
@@ -28,6 +25,6 @@ export class WhitespaceTokenizer extends StringTokenizer {
   }
 
   protected isWhitespace(c: string): boolean {
-    return WHITESPACE_REGEX.test(c) || c === '\u200b' || c === '\ufeff';
+    return isWhitespace(c) || c === '\u200b' || c === '\ufeff';
   }
 }

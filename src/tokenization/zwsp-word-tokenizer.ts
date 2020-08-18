@@ -1,10 +1,6 @@
-import XRegExp from 'xregexp';
-
 import { createRange, Range } from '../annotations/range';
 import { LatinWordTokenizer, TokenizeContext } from './latin-word-tokenizer';
-
-const WHITESPACE_REGEX: RegExp = XRegExp('^\\p{Z}$');
-const PUNCT_REGEX: RegExp = XRegExp('^\\p{P}$');
+import { isPunctuation, isWhitespace } from './unicode';
 
 export class ZwspWordTokenizer extends LatinWordTokenizer {
   protected processCharacter(
@@ -12,20 +8,20 @@ export class ZwspWordTokenizer extends LatinWordTokenizer {
     range: Range,
     ctxt: TokenizeContext
   ): [Range | undefined, Range | undefined] {
-    if (WHITESPACE_REGEX.test(data[ctxt.index])) {
+    if (isWhitespace(data[ctxt.index])) {
       let endIndex = ctxt.index + 1;
-      while (endIndex !== range.end && WHITESPACE_REGEX.test(data[endIndex])) {
+      while (endIndex !== range.end && isWhitespace(data[endIndex])) {
         endIndex++;
       }
       let tokenRanges: [Range | undefined, Range | undefined] = [undefined, undefined];
-      if (ctxt.index !== range.end - 1 && (PUNCT_REGEX.test(data[endIndex]) || WHITESPACE_REGEX.test(data[endIndex]))) {
+      if (ctxt.index !== range.end - 1 && (isPunctuation(data[endIndex]) || isWhitespace(data[endIndex]))) {
         if (ctxt.wordStart !== -1) {
           tokenRanges = [createRange(ctxt.wordStart, ctxt.index), undefined];
           ctxt.wordStart = -1;
         }
       } else if (
         ctxt.index !== range.start &&
-        (PUNCT_REGEX.test(data[ctxt.index - 1]) || WHITESPACE_REGEX.test(data[ctxt.index - 1]))
+        (isPunctuation(data[ctxt.index - 1]) || isWhitespace(data[ctxt.index - 1]))
       ) {
         if (ctxt.innerWordPunct !== -1) {
           tokenRanges = [createRange(ctxt.wordStart, ctxt.innerWordPunct), createRange(ctxt.innerWordPunct)];

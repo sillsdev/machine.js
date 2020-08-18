@@ -2,7 +2,7 @@ import { createRange, Range } from '../annotations/range';
 import { StringTokenizer } from './string-tokenizer';
 
 export class LineSegmentTokenizer extends StringTokenizer {
-  tokenize(data: string, range: Range = createRange(0, data.length)): Range[] {
+  tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {
     const tokens: Range[] = [];
     let lineStart = range.start;
     for (let i = range.start; i < range.end; i++) {

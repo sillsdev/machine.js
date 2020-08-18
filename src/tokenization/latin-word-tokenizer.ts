@@ -1,9 +1,9 @@
 import XRegExp from 'xregexp';
 
 import { createRange, Range } from '../annotations/range';
+import { isControl, isPunctuation, isSymbol } from './unicode';
 import { WhitespaceTokenizer } from './whitespace-tokenizer';
 
-const PUNCT_REGEX: RegExp = XRegExp('^\\p{P}|\\p{S}|\\p{Cc}$');
 const INNER_WORD_PUNCT_REGEX: RegExp = XRegExp("^[&\\-.:=,?@\xAD\xB7\u2010\u2011\u2019\u2027]|['_]+");
 
 export class TokenizeContext {
@@ -22,10 +22,10 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
     this.abbreviations = new Set<string>(abbreviations.map(a => a.toLowerCase()));
   }
 
-  tokenize(data: string, range: Range = createRange(0, data.length)): Range[] {
+  tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {
     const tokens: Range[] = [];
     const ctxt = new TokenizeContext();
-    for (const charRange of super.tokenize(data, range)) {
+    for (const charRange of super.tokenizeAsRanges(data, range)) {
       ctxt.index = charRange.start;
       ctxt.wordStart = -1;
       ctxt.innerWordPunct = -1;
@@ -68,7 +68,7 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
     let tokenRanges: [Range | undefined, Range | undefined] = [undefined, undefined];
     const c = data[ctxt.index];
     let endIndex = ctxt.index + 1;
-    if (PUNCT_REGEX.test(c)) {
+    if (isPunctuation(c) || isSymbol(c) || isControl(c)) {
       while (endIndex !== range.end && data[endIndex] === c) {
         endIndex++;
       }

@@ -1,4 +1,5 @@
 import XRegExp from 'xregexp';
+
 import { TranslationResult } from './translation-result';
 import { TranslationSources } from './translation-sources';
 import { TranslationSuggester } from './translation-suggester';

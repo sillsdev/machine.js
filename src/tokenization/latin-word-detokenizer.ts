@@ -1,5 +1,6 @@
 import XRegExp from 'xregexp';
 import { DetokenizeOperation, StringDetokenizer } from './string-detokenizer';
+import { isPunctuation } from './unicode';
 
 enum QuoteType {
   DoubleQuotation,
@@ -29,7 +30,6 @@ const QUOTATION_MARKS = new Map<string, QuoteType>([
 ]);
 
 const MERGE_RIGHT_REGEX: RegExp = XRegExp('^\\p{Sc}|[([{¿¡<]$');
-const MERGE_LEFT_REGEX: RegExp = XRegExp('^\\p{P}|>$');
 
 export class LatinWordDetokenizer extends StringDetokenizer {
   protected createContext(): any {
@@ -51,7 +51,7 @@ export class LatinWordDetokenizer extends StringDetokenizer {
       }
     } else if (c === '/' || c === '\\') {
       return DetokenizeOperation.MergeBoth;
-    } else if (MERGE_LEFT_REGEX.test(c)) {
+    } else if (isPunctuation(c) || c === '>') {
       return DetokenizeOperation.MergeLeft;
     }
     return DetokenizeOperation.NoOperation;

@@ -1,8 +1,7 @@
-import XRegExp from 'xregexp';
-
 import { createRange, Range } from '../annotations/range';
 import { LatinWordTokenizer } from './latin-word-tokenizer';
 import { LineSegmentTokenizer } from './line-segment-tokenizer';
+import { isLower } from './unicode';
 
 const SENTENCE_TERMINALS: Set<string> = new Set<string>([
   '.',
@@ -24,21 +23,20 @@ const SENTENCE_TERMINALS: Set<string> = new Set<string>([
 const CLOSING_QUOTES: Set<string> = new Set<string>(["'", '\u2019', '"', '\u201D', '»', '›']);
 const CLOSING_BRACKETS: Set<string> = new Set<string>([']', ')']);
 const LINE_TOKENIZER: LineSegmentTokenizer = new LineSegmentTokenizer();
-const LOWER_REGEX: RegExp = XRegExp('^\\p{Ll}$');
 
 export class LatinSentenceTokenizer extends LatinWordTokenizer {
   constructor(abbreviations: string[] = []) {
     super(abbreviations);
   }
 
-  tokenize(data: string, range: Range = createRange(0, data.length)): Range[] {
+  tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {
     const tokens: Range[] = [];
-    for (const lineRange of LINE_TOKENIZER.tokenize(data, range)) {
+    for (const lineRange of LINE_TOKENIZER.tokenizeAsRanges(data, range)) {
       let sentenceStart = -1;
       let sentenceEnd = -1;
       let inEnd = false;
       let hasEndQuotesBracket = false;
-      for (const wordRange of super.tokenize(data, lineRange)) {
+      for (const wordRange of super.tokenizeAsRanges(data, lineRange)) {
         if (sentenceStart === -1) {
           sentenceStart = wordRange.start;
         }
@@ -50,7 +48,7 @@ export class LatinSentenceTokenizer extends LatinWordTokenizer {
         } else {
           if (CLOSING_QUOTES.has(word) || CLOSING_BRACKETS.has(word)) {
             hasEndQuotesBracket = true;
-          } else if (hasEndQuotesBracket && LOWER_REGEX.test(word[0])) {
+          } else if (hasEndQuotesBracket && isLower(word[0])) {
             inEnd = false;
             hasEndQuotesBracket = false;
           } else {

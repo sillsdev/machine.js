@@ -1,14 +1,10 @@
-import XRegExp from 'xregexp';
-
 import { LatinWordDetokenizer } from './latin-word-detokenizer';
 import { DetokenizeOperation } from './string-detokenizer';
-
-const WHITESPACE_REGEX: RegExp = XRegExp('^\\p{Z}$');
-const PUNCT_REGEX: RegExp = XRegExp('^\\p{P}$');
+import { isPunctuation, isWhitespace } from './unicode';
 
 export class ZwspWordDetokenizer extends LatinWordDetokenizer {
   protected getOperation(ctxt: any, token: string): DetokenizeOperation {
-    if (WHITESPACE_REGEX.test(token[0])) {
+    if (isWhitespace(token[0])) {
       return DetokenizeOperation.MergeBoth;
     }
     return super.getOperation(ctxt, token);
@@ -18,10 +14,10 @@ export class ZwspWordDetokenizer extends LatinWordDetokenizer {
     if (
       index < tokens.length - 1 &&
       ops[index + 1] === DetokenizeOperation.MergeRight &&
-      PUNCT_REGEX.test(tokens[index + 1][0])
+      isPunctuation(tokens[index + 1][0])
     ) {
       return ' ';
-    } else if (ops[index] === DetokenizeOperation.MergeLeft && PUNCT_REGEX.test(tokens[index][0])) {
+    } else if (ops[index] === DetokenizeOperation.MergeLeft && isPunctuation(tokens[index][0])) {
       return ' ';
     }
     return '\u200b';
