@@ -1,10 +1,16 @@
 ﻿export { createRange, Range } from './annotations/range';
 
 export { Tokenizer } from './tokenization/tokenizer';
+export { RangeTokenizer } from './tokenization/range-tokenizer';
+export { Detokenizer } from './tokenization/detokenizer';
 export { LatinWordTokenizer } from './tokenization/latin-word-tokenizer';
 export { WhitespaceTokenizer } from './tokenization/whitespace-tokenizer';
 export { LineSegmentTokenizer } from './tokenization/line-segment-tokenizer';
 export { LatinSentenceTokenizer } from './tokenization/latin-sentence-tokenizer';
+export { ZwspWordTokenizer } from './tokenization/zwsp-word-tokenizer';
+export { LatinWordDetokenizer } from './tokenization/latin-word-detokenizer';
+export { WhitespaceDetokenizer } from './tokenization/whitespace-detokenizer';
+export { ZwspWordDetokenizer } from './tokenization/zwsp-word-detokenizer';
 
 export { MAX_SEGMENT_LENGTH } from './translation/constants';
 export { TranslationSources } from './translation/translation-sources';
