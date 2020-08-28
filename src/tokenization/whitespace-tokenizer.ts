@@ -1,6 +1,6 @@
 import { createRange, Range } from '../annotations/range';
+import { isWhitespace } from '../string-utils';
 import { StringTokenizer } from './string-tokenizer';
-import { isWhitespace } from './unicode';
 
 export class WhitespaceTokenizer extends StringTokenizer {
   tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {

@@ -1,6 +1,6 @@
 import XRegExp from 'xregexp';
+import { isPunctuation } from '../string-utils';
 import { DetokenizeOperation, StringDetokenizer } from './string-detokenizer';
-import { isPunctuation } from './unicode';
 
 enum QuoteType {
   DoubleQuotation,

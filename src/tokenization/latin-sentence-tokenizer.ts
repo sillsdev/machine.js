@@ -1,27 +1,8 @@
 import { createRange, Range } from '../annotations/range';
+import { isDelayedSentenceEnd, isLower, isSentenceTerminal } from '../string-utils';
 import { LatinWordTokenizer } from './latin-word-tokenizer';
 import { LineSegmentTokenizer } from './line-segment-tokenizer';
-import { isLower } from './unicode';
 
-const SENTENCE_TERMINALS: Set<string> = new Set<string>([
-  '.',
-  '!',
-  '?',
-  '\u203C',
-  '\u203D',
-  '\u2047',
-  '\u2048',
-  '\u2049',
-  '\u3002',
-  '\uFE52',
-  '\uFE57',
-  '\uFF01',
-  '\uFF0E',
-  '\uFF1F',
-  '\uFF61'
-]);
-const CLOSING_QUOTES: Set<string> = new Set<string>(["'", '\u2019', '"', '\u201D', '»', '›']);
-const CLOSING_BRACKETS: Set<string> = new Set<string>([']', ')']);
 const LINE_TOKENIZER: LineSegmentTokenizer = new LineSegmentTokenizer();
 
 export class LatinSentenceTokenizer extends LatinWordTokenizer {
@@ -42,11 +23,11 @@ export class LatinSentenceTokenizer extends LatinWordTokenizer {
         }
         const word = data.substring(wordRange.start, wordRange.end);
         if (!inEnd) {
-          if (SENTENCE_TERMINALS.has(word)) {
+          if (isSentenceTerminal(word)) {
             inEnd = true;
           }
         } else {
-          if (CLOSING_QUOTES.has(word) || CLOSING_BRACKETS.has(word)) {
+          if (isDelayedSentenceEnd(word)) {
             hasEndQuotesBracket = true;
           } else if (hasEndQuotesBracket && isLower(word[0])) {
             inEnd = false;

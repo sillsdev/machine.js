@@ -55,8 +55,13 @@ export class WebApiClient {
     );
   }
 
-  async trainSegmentPair(projectId: string, sourceSegment: string[], targetSegment: string[]): Promise<void> {
-    const pairDto: SegmentPairDto = { sourceSegment, targetSegment };
+  async trainSegmentPair(
+    projectId: string,
+    sourceSegment: string[],
+    targetSegment: string[],
+    sentenceStart: boolean
+  ): Promise<void> {
+    const pairDto: SegmentPairDto = { sourceSegment, targetSegment, sentenceStart };
     await this.http.post(`translation/engines/project:${projectId}/actions/trainSegment`, pairDto).toPromise();
   }
 

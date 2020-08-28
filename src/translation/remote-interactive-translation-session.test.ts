@@ -65,7 +65,8 @@ describe('RemoteInteractiveTranslationSession', () => {
       new ErrorCorrectionModel(),
       'project01',
       sourceSegment,
-      new HybridInteractiveTranslationResult(new WordGraph())
+      new HybridInteractiveTranslationResult(new WordGraph()),
+      true
     );
     expect(session.isSourceSegmentValid).toBeFalsy();
   });
@@ -78,7 +79,8 @@ describe('RemoteInteractiveTranslationSession', () => {
       env.mockedRestClient.trainSegmentPair(
         'project01',
         deepEqual(['En', 'el', 'principio']),
-        deepEqual(['In', 'the', 'beginning'])
+        deepEqual(['In', 'the', 'beginning']),
+        true
       )
     ).once();
 
@@ -88,7 +90,8 @@ describe('RemoteInteractiveTranslationSession', () => {
       env.mockedRestClient.trainSegmentPair(
         'project01',
         deepEqual(['En', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.']),
-        deepEqual(['In', 'the', 'beginning', 'the', 'Word', 'already', 'existed', '.'])
+        deepEqual(['In', 'the', 'beginning', 'the', 'Word', 'already', 'existed', '.']),
+        true
       )
     ).once();
   });
@@ -101,7 +104,8 @@ describe('RemoteInteractiveTranslationSession', () => {
       env.mockedRestClient.trainSegmentPair(
         'project01',
         deepEqual(['En', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.']),
-        deepEqual(['In', 'the', 'beginning'])
+        deepEqual(['In', 'the', 'beginning']),
+        true
       )
     ).once();
   });
@@ -148,7 +152,7 @@ class TestEnvironment {
   readonly session: RemoteInteractiveTranslationSession;
 
   constructor() {
-    when(this.mockedRestClient.trainSegmentPair('project01', anything(), anything())).thenResolve();
+    when(this.mockedRestClient.trainSegmentPair('project01', anything(), anything(), anything())).thenResolve();
 
     const sourceSegment = ['En', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.'];
 
@@ -474,7 +478,8 @@ class TestEnvironment {
       new ErrorCorrectionModel(),
       'project01',
       sourceSegment,
-      result
+      result,
+      true
     );
   }
 }

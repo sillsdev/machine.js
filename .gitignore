@@ -1,6 +1,7 @@
 # compiled output
 /lib
 /ts3.4
+*.tgz
 
 # dependencies
 /node_modules

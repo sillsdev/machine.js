@@ -39,7 +39,8 @@ export class RemoteInteractiveTranslationSession implements InteractiveTranslati
     private readonly ecm: ErrorCorrectionModel,
     private readonly projectId: string,
     public readonly sourceSegment: string[],
-    result: HybridInteractiveTranslationResult
+    result: HybridInteractiveTranslationResult,
+    private readonly sentenceStart: boolean
   ) {
     this.smtWordGraph = result.smtWordGraph;
     this.ruleResult = result.ruleResult;
@@ -111,7 +112,7 @@ export class RemoteInteractiveTranslationSession implements InteractiveTranslati
     }
 
     if (sourceSegment.length > 0) {
-      await this.webApiClient.trainSegmentPair(this.projectId, sourceSegment, this.prefix);
+      await this.webApiClient.trainSegmentPair(this.projectId, sourceSegment, this.prefix, this.sentenceStart);
     }
   }
 

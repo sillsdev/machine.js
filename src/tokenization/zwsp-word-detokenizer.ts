@@ -1,6 +1,6 @@
+import { isPunctuation, isWhitespace } from '../string-utils';
 import { LatinWordDetokenizer } from './latin-word-detokenizer';
 import { DetokenizeOperation } from './string-detokenizer';
-import { isPunctuation, isWhitespace } from './unicode';
 
 export class ZwspWordDetokenizer extends LatinWordDetokenizer {
   protected getOperation(ctxt: any, token: string): DetokenizeOperation {

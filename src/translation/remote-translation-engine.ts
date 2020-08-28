@@ -5,7 +5,6 @@ import { MAX_SEGMENT_LENGTH } from './constants';
 import { ErrorCorrectionModel } from './error-correction-model';
 import { HybridInteractiveTranslationResult } from './hybrid-interactive-translation-result';
 import { InteractiveTranslationEngine } from './interactive-translation-engine';
-import { InteractiveTranslationSession } from './interactive-translation-session';
 import { ProgressStatus } from './progress-status';
 import { RemoteInteractiveTranslationSession } from './remote-interactive-translation-session';
 import { TranslationEngineStats } from './translation-engine-stats';
@@ -36,14 +35,24 @@ export class RemoteTranslationEngine implements InteractiveTranslationEngine {
     return await this.webApiClient.translateNBest(this.projectId, n, segment);
   }
 
-  async translateInteractively(segment: string[]): Promise<InteractiveTranslationSession> {
+  async translateInteractively(
+    segment: string[],
+    sentenceStart: boolean = true
+  ): Promise<RemoteInteractiveTranslationSession> {
     let results: HybridInteractiveTranslationResult;
     if (segment.length > MAX_SEGMENT_LENGTH) {
       results = new HybridInteractiveTranslationResult(new WordGraph());
     } else {
       results = await this.webApiClient.translateInteractively(this.projectId, segment);
     }
-    return new RemoteInteractiveTranslationSession(this.webApiClient, this.ecm, this.projectId, segment, results);
+    return new RemoteInteractiveTranslationSession(
+      this.webApiClient,
+      this.ecm,
+      this.projectId,
+      segment,
+      results,
+      sentenceStart
+    );
   }
 
   train(): Observable<ProgressStatus> {

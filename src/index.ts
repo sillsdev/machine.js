@@ -25,9 +25,12 @@ export { InteractiveTranslationEngine } from './translation/interactive-translat
 export { InteractiveTranslationSession } from './translation/interactive-translation-session';
 export { ProgressStatus } from './translation/progress-status';
 export { RemoteTranslationEngine } from './translation/remote-translation-engine';
+export { RemoteInteractiveTranslationSession } from './translation/remote-interactive-translation-session';
 export { TranslationSuggestion } from './translation/translation-suggestion';
 export { TranslationSuggester } from './translation/translation-suggester';
 export { PhraseTranslationSuggester } from './translation/phrase-translation-suggester';
 
 export { HttpClient, HttpResponse } from './web-api/http-client';
 export { RxjsHttpClient } from './web-api/rxjs-http-client';
+
+export { hasSentenceEnding, toSentenceCase } from './string-utils';

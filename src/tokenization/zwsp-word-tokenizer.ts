@@ -1,6 +1,6 @@
 import { createRange, Range } from '../annotations/range';
+import { isPunctuation, isWhitespace } from '../string-utils';
 import { LatinWordTokenizer, TokenizeContext } from './latin-word-tokenizer';
-import { isPunctuation, isWhitespace } from './unicode';
 
 export class ZwspWordTokenizer extends LatinWordTokenizer {
   protected processCharacter(

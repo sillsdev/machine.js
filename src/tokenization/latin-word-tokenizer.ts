@@ -1,7 +1,7 @@
 import XRegExp from 'xregexp';
 
 import { createRange, Range } from '../annotations/range';
-import { isControl, isPunctuation, isSymbol } from './unicode';
+import { isControl, isPunctuation, isSymbol } from '../string-utils';
 import { WhitespaceTokenizer } from './whitespace-tokenizer';
 
 const INNER_WORD_PUNCT_REGEX: RegExp = XRegExp("^[&\\-.:=,?@\xAD\xB7\u2010\u2011\u2019\u2027]|['_]+");
