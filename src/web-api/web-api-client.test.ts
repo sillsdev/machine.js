@@ -5,98 +5,72 @@ import { BuildDto } from './build-dto';
 import { BuildStates } from './build-states';
 import { EngineDto } from './engine-dto';
 import { HttpClient } from './http-client';
-import { InteractiveTranslationResultDto } from './interactive-translation-result-dto';
 import { RxjsHttpClient } from './rxjs-http-client';
 import { WebApiClient } from './web-api-client';
+import { WordGraphDto } from './word-graph-dto';
 
 describe('WebApiClient', () => {
-  it('translate interactively', async () => {
+  it('get word graph', async () => {
     const env = new TestEnvironment();
     const sourceSegment = ['Esto', 'es', 'una', 'prueba', '.'];
     when(
-      env.mockedHttpClient.post<InteractiveTranslationResultDto>(
-        'translation/engines/project:project01/actions/interactiveTranslate',
+      env.mockedHttpClient.post<WordGraphDto>(
+        'translation/engines/project:project01/actions/getWordGraph',
         deepEqual(sourceSegment)
       )
     ).thenReturn(
       of({
         status: 200,
         data: {
-          wordGraph: {
-            initialStateScore: -111.111,
-            finalStates: [4],
-            arcs: [
-              {
-                prevState: 0,
-                nextState: 1,
-                score: -11.11,
-                words: ['This', 'is'],
-                confidences: [0.4, 0.5],
-                sourceSegmentRange: { start: 0, end: 2 },
-                isUnknown: false,
-                alignment: [{ sourceIndex: 0, targetIndex: 0 }, { sourceIndex: 1, targetIndex: 1 }]
-              },
-              {
-                prevState: 1,
-                nextState: 2,
-                score: -22.22,
-                words: ['a'],
-                confidences: [0.6],
-                sourceSegmentRange: { start: 2, end: 3 },
-                isUnknown: false,
-                alignment: [{ sourceIndex: 0, targetIndex: 0 }]
-              },
-              {
-                prevState: 2,
-                nextState: 3,
-                score: 33.33,
-                words: ['prueba'],
-                confidences: [0],
-                sourceSegmentRange: { start: 3, end: 4 },
-                isUnknown: true,
-                alignment: [{ sourceIndex: 0, targetIndex: 0 }]
-              },
-              {
-                prevState: 3,
-                nextState: 4,
-                score: -44.44,
-                words: ['.'],
-                confidences: [0.7],
-                sourceSegmentRange: { start: 4, end: 5 },
-                isUnknown: false,
-                alignment: [{ sourceIndex: 0, targetIndex: 0 }]
-              }
-            ]
-          },
-          ruleResult: {
-            target: ['Esto', 'es', 'una', 'test', '.'],
-            confidences: [0.0, 0.0, 0.0, 1.0, 0.0],
-            sources: [
-              TranslationSources.None,
-              TranslationSources.None,
-              TranslationSources.None,
-              TranslationSources.Transfer,
-              TranslationSources.None
-            ],
-            alignment: [
-              { sourceIndex: 0, targetIndex: 0 },
-              { sourceIndex: 1, targetIndex: 1 },
-              { sourceIndex: 2, targetIndex: 2 },
-              { sourceIndex: 3, targetIndex: 3 },
-              { sourceIndex: 4, targetIndex: 4 }
-            ],
-            phrases: [
-              { sourceSegmentRange: { start: 0, end: 3 }, targetSegmentCut: 3, confidence: 1 },
-              { sourceSegmentRange: { start: 3, end: 4 }, targetSegmentCut: 4, confidence: 1 },
-              { sourceSegmentRange: { start: 4, end: 5 }, targetSegmentCut: 5, confidence: 1 }
-            ]
-          }
+          initialStateScore: -111.111,
+          finalStates: [4],
+          arcs: [
+            {
+              prevState: 0,
+              nextState: 1,
+              score: -11.11,
+              words: ['This', 'is'],
+              confidences: [0.4, 0.5],
+              sourceSegmentRange: { start: 0, end: 2 },
+              sources: [TranslationSources.Smt, TranslationSources.Smt],
+              alignment: [{ sourceIndex: 0, targetIndex: 0 }, { sourceIndex: 1, targetIndex: 1 }]
+            },
+            {
+              prevState: 1,
+              nextState: 2,
+              score: -22.22,
+              words: ['a'],
+              confidences: [0.6],
+              sourceSegmentRange: { start: 2, end: 3 },
+              sources: [TranslationSources.Smt],
+              alignment: [{ sourceIndex: 0, targetIndex: 0 }]
+            },
+            {
+              prevState: 2,
+              nextState: 3,
+              score: 33.33,
+              words: ['prueba'],
+              confidences: [0],
+              sourceSegmentRange: { start: 3, end: 4 },
+              sources: [TranslationSources.None],
+              alignment: [{ sourceIndex: 0, targetIndex: 0 }]
+            },
+            {
+              prevState: 3,
+              nextState: 4,
+              score: -44.44,
+              words: ['.'],
+              confidences: [0.7],
+              sourceSegmentRange: { start: 4, end: 5 },
+              sources: [TranslationSources.Smt],
+              alignment: [{ sourceIndex: 0, targetIndex: 0 }]
+            }
+          ]
         }
       })
     );
 
-    const result = await env.client.translateInteractively('project01', sourceSegment);
-    const wordGraph = result.smtWordGraph;
+    const wordGraph = await env.client.getWordGraph('project01', sourceSegment);
     expect(wordGraph.initialStateScore).toEqual(-111.111);
     expect(Array.from(wordGraph.finalStates)).toEqual([4]);
     expect(wordGraph.arcs.length).toEqual(4);
@@ -108,57 +82,11 @@ describe('WebApiClient', () => {
     expect(arc.wordConfidences).toEqual([0.4, 0.5]);
     expect(arc.sourceSegmentRange.start).toEqual(0);
     expect(arc.sourceSegmentRange.end).toEqual(2);
-    expect(arc.isUnknown).toBeFalsy();
+    expect(arc.wordSources).toEqual([TranslationSources.Smt, TranslationSources.Smt]);
     expect(arc.alignment.get(0, 0)).toBeTruthy();
     expect(arc.alignment.get(1, 1)).toBeTruthy();
     arc = wordGraph.arcs[2];
-    expect(arc.isUnknown).toBeTruthy();
-
-    const ruleResult = result.ruleResult;
-    expect(ruleResult).not.toBeUndefined();
-    if (ruleResult == null) {
-      return;
-    }
-    expect(ruleResult.targetSegment).toEqual(['Esto', 'es', 'una', 'test', '.']);
-    expect(ruleResult.wordConfidences).toEqual([0.0, 0.0, 0.0, 1.0, 0.0]);
-    expect(ruleResult.wordSources).toEqual([
-      TranslationSources.None,
-      TranslationSources.None,
-      TranslationSources.None,
-      TranslationSources.Transfer,
-      TranslationSources.None
-    ]);
-    expect(ruleResult.alignment.get(0, 0)).toBeTruthy();
-    expect(ruleResult.alignment.get(1, 1)).toBeTruthy();
-    expect(ruleResult.alignment.get(2, 2)).toBeTruthy();
-    expect(ruleResult.alignment.get(3, 3)).toBeTruthy();
-    expect(ruleResult.alignment.get(4, 4)).toBeTruthy();
-  });
-
-  it('translate interactively with no rule result', async () => {
-    const env = new TestEnvironment();
-    const sourceSegment = ['Esto', 'es', 'una', 'prueba', '.'];
-    when(
-      env.mockedHttpClient.post<InteractiveTranslationResultDto>(
-        'translation/engines/project:project01/actions/interactiveTranslate',
-        deepEqual(sourceSegment)
-      )
-    ).thenReturn(
-      of({
-        status: 200,
-        data: {
-          wordGraph: {
-            initialStateScore: -111.111,
-            finalStates: [],
-            arcs: []
-          }
-        }
-      })
-    );
-
-    const result = await env.client.translateInteractively('project01', sourceSegment);
-    expect(result.smtWordGraph).not.toBeUndefined();
-    expect(result.ruleResult).toBeUndefined();
+    expect(arc.wordSources).toEqual([TranslationSources.None]);
   });
 
   it('train with no errors', () => {

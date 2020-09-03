@@ -2,18 +2,14 @@
 import { HttpClient } from '../web-api/http-client';
 import { WebApiClient } from '../web-api/web-api-client';
 import { MAX_SEGMENT_LENGTH } from './constants';
-import { ErrorCorrectionModel } from './error-correction-model';
-import { HybridInteractiveTranslationResult } from './hybrid-interactive-translation-result';
 import { InteractiveTranslationEngine } from './interactive-translation-engine';
 import { ProgressStatus } from './progress-status';
-import { RemoteInteractiveTranslationSession } from './remote-interactive-translation-session';
 import { TranslationEngineStats } from './translation-engine-stats';
 import { TranslationResult } from './translation-result';
 import { TranslationResultBuilder } from './translation-result-builder';
 import { WordGraph } from './word-graph';
 
 export class RemoteTranslationEngine implements InteractiveTranslationEngine {
-  private readonly ecm: ErrorCorrectionModel = new ErrorCorrectionModel();
   private readonly webApiClient: WebApiClient;
 
   constructor(public readonly projectId: string, httpClient: HttpClient) {
@@ -35,24 +31,15 @@ export class RemoteTranslationEngine implements InteractiveTranslationEngine {
     return await this.webApiClient.translateNBest(this.projectId, n, segment);
   }
 
-  async translateInteractively(
-    segment: string[],
-    sentenceStart: boolean = true
-  ): Promise<RemoteInteractiveTranslationSession> {
-    let results: HybridInteractiveTranslationResult;
+  async getWordGraph(segment: string[]): Promise<WordGraph> {
     if (segment.length > MAX_SEGMENT_LENGTH) {
-      results = new HybridInteractiveTranslationResult(new WordGraph());
-    } else {
-      results = await this.webApiClient.translateInteractively(this.projectId, segment);
+      return new WordGraph();
     }
-    return new RemoteInteractiveTranslationSession(
-      this.webApiClient,
-      this.ecm,
-      this.projectId,
-      segment,
-      results,
-      sentenceStart
-    );
+    return await this.webApiClient.getWordGraph(this.projectId, segment);
+  }
+
+  trainSegment(sourceSegment: string[], targetSegment: string[], sentenceStart: boolean = true): Promise<void> {
+    return this.webApiClient.trainSegmentPair(this.projectId, sourceSegment, targetSegment, sentenceStart);
   }
 
   train(): Observable<ProgressStatus> {

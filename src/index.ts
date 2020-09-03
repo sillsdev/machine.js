@@ -22,10 +22,10 @@ export { TranslationResultBuilder } from './translation/translation-result-build
 export { TranslationEngine } from './translation/translation-engine';
 export { TranslationEngineStats } from './translation/translation-engine-stats';
 export { InteractiveTranslationEngine } from './translation/interactive-translation-engine';
+export { InteractiveTranslator } from './translation/interactive-translator';
 export { InteractiveTranslationSession } from './translation/interactive-translation-session';
 export { ProgressStatus } from './translation/progress-status';
 export { RemoteTranslationEngine } from './translation/remote-translation-engine';
-export { RemoteInteractiveTranslationSession } from './translation/remote-interactive-translation-session';
 export { TranslationSuggestion } from './translation/translation-suggestion';
 export { TranslationSuggester } from './translation/translation-suggester';
 export { PhraseTranslationSuggester } from './translation/phrase-translation-suggester';

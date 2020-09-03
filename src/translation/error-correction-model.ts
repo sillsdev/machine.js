@@ -2,6 +2,7 @@
 import { EditOperation } from './edit-operation';
 import { SegmentEditDistance } from './segment-edit-distance';
 import { TranslationResultBuilder } from './translation-result-builder';
+import { TranslationSources } from './translation-sources';
 
 export class ErrorCorrectionModel {
   private readonly segmentEditDistance: SegmentEditDistance = new SegmentEditDistance();
@@ -78,7 +79,7 @@ export class ErrorCorrectionModel {
   ): number {
     if (uncorrectedPrefixLen === 0) {
       for (const w of prefix) {
-        builder.appendWord(w);
+        builder.appendWord(w, TranslationSources.Prefix);
       }
       return prefix.length;
     }

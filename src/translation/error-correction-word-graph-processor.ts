@@ -101,7 +101,7 @@ export class ErrorCorrectionWordGraphProcessor {
     for (const hypothesis of this.search(heap)) {
       const builder = new TranslationResultBuilder();
       this.buildCorrectionFromHypothesis(builder, this.prevPrefix, this.prevIsLastWordComplete, hypothesis);
-      yield builder.toResult(this.sourceSegment, this.prevPrefix.length);
+      yield builder.toResult(this.sourceSegment);
     }
   }
 
@@ -333,7 +333,7 @@ export class ErrorCorrectionWordGraphProcessor {
     let alignmentColsToAddCount = this.ecm.correctPrefix(builder, uncorrectedPrefixLen, prefix, isLastWordComplete);
 
     for (const arc of hypothesis.arcs) {
-      this.updateCorrectionFromArc(builder, arc, false, alignmentColsToAddCount);
+      this.updateCorrectionFromArc(builder, arc, alignmentColsToAddCount);
       alignmentColsToAddCount = 0;
     }
   }
@@ -358,7 +358,7 @@ export class ErrorCorrectionWordGraphProcessor {
     }
 
     for (const arc of arcs) {
-      this.updateCorrectionFromArc(builder, arc, true, 0);
+      this.updateCorrectionFromArc(builder, arc, 0);
     }
   }
 
@@ -378,17 +378,16 @@ export class ErrorCorrectionWordGraphProcessor {
 
     this.addBestUncorrectedPrefixState(builder, curProcPrefixPos, arc.prevState);
 
-    this.updateCorrectionFromArc(builder, arc, true, 0);
+    this.updateCorrectionFromArc(builder, arc, 0);
   }
 
   private updateCorrectionFromArc(
     builder: TranslationResultBuilder,
     arc: WordGraphArc,
-    isPrefix: boolean,
     alignmentColsToAddCount: number
   ): void {
     for (let i = 0; i < arc.words.length; i++) {
-      builder.appendWord(arc.words[i], arc.wordConfidences[i], !isPrefix && arc.isUnknown);
+      builder.appendWord(arc.words[i], arc.wordSources[i], arc.wordConfidences[i]);
     }
 
     let alignment = arc.alignment;

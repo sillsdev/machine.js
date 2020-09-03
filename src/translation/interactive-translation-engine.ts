@@ -1,6 +1,7 @@
-import { InteractiveTranslationSession } from './interactive-translation-session';
 import { TranslationEngine } from './translation-engine';
+import { WordGraph } from './word-graph';
 
 export interface InteractiveTranslationEngine extends TranslationEngine {
-  translateInteractively(segment: string[]): Promise<InteractiveTranslationSession>;
+  getWordGraph(segment: string[]): Promise<WordGraph>;
+  trainSegment(sourceSegment: string[], targetSegment: string[], sentenceStart?: boolean): Promise<void>;
 }

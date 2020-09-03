@@ -1,3 +1,4 @@
+import { TranslationSources } from '../translation/translation-sources';
 import { AlignedWordPairDto } from './aligned-word-pair-dto';
 import { RangeDto } from './range-dto';
 
@@ -8,6 +9,6 @@ export interface WordGraphArcDto {
   words: string[];
   confidences: number[];
   sourceSegmentRange: RangeDto;
-  isUnknown: boolean;
   alignment: AlignedWordPairDto[];
+  sources: TranslationSources[];
 }

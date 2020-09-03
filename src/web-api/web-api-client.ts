@@ -1,7 +1,6 @@
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, expand, filter, map, mergeMap, startWith, takeWhile } from 'rxjs/operators';
 import { createRange, Range } from '../annotations/range';
-import { HybridInteractiveTranslationResult } from '../translation/hybrid-interactive-translation-result';
 import { Phrase } from '../translation/phrase';
 import { ProgressStatus } from '../translation/progress-status';
 import { TranslationEngineStats } from '../translation/translation-engine-stats';
@@ -14,7 +13,6 @@ import { BuildDto } from './build-dto';
 import { BuildStates } from './build-states';
 import { EngineDto } from './engine-dto';
 import { HttpClient } from './http-client';
-import { InteractiveTranslationResultDto } from './interactive-translation-result-dto';
 import { PhraseDto } from './phrase-dto';
 import { RangeDto } from './range-dto';
 import { SegmentPairDto } from './segment-pair-dto';
@@ -39,20 +37,11 @@ export class WebApiClient {
     return dtos.map(dto => this.createTranslationResult(dto, sourceSegment));
   }
 
-  async translateInteractively(
-    projectId: string,
-    sourceSegment: string[]
-  ): Promise<HybridInteractiveTranslationResult> {
+  async getWordGraph(projectId: string, sourceSegment: string[]): Promise<WordGraph> {
     const response = await this.http
-      .post<InteractiveTranslationResultDto>(
-        `translation/engines/project:${projectId}/actions/interactiveTranslate`,
-        sourceSegment
-      )
+      .post<WordGraphDto>(`translation/engines/project:${projectId}/actions/getWordGraph`, sourceSegment)
       .toPromise();
-    return this.createHybridInteractiveTranslationResult(
-      response.data as InteractiveTranslationResultDto,
-      sourceSegment
-    );
+    return this.createWordGraph(response.data as WordGraphDto);
   }
 
   async trainSegmentPair(
@@ -135,16 +124,6 @@ export class WebApiClient {
     );
   }
 
-  private createHybridInteractiveTranslationResult(
-    dto: InteractiveTranslationResultDto,
-    sourceSegment: string[]
-  ): HybridInteractiveTranslationResult {
-    return new HybridInteractiveTranslationResult(
-      this.createWordGraph(dto.wordGraph),
-      dto.ruleResult != null ? this.createTranslationResult(dto.ruleResult, sourceSegment) : undefined
-    );
-  }
-
   private createWordGraph(dto: WordGraphDto): WordGraph {
     const arcs: WordGraphArc[] = [];
     for (const arcDto of dto.arcs) {
@@ -161,7 +140,7 @@ export class WebApiClient {
           arcDto.words,
           alignment,
           this.createRange(arcDto.sourceSegmentRange),
-          arcDto.isUnknown,
+          arcDto.sources,
           arcDto.confidences
         )
       );

@@ -1,94 +1,90 @@
 import { genSequence } from 'gensequence';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { createRange, Range } from '../annotations/range';
-import { WebApiClient } from '../web-api/web-api-client';
 import { MAX_SEGMENT_LENGTH } from './constants';
-import { ErrorCorrectionModel } from './error-correction-model';
-import { HybridInteractiveTranslationResult } from './hybrid-interactive-translation-result';
-import { RemoteInteractiveTranslationSession } from './remote-interactive-translation-session';
-import { TranslationResult } from './translation-result';
+import { InteractiveTranslationSession } from './interactive-translation-session';
+import { InteractiveTranslator } from './interactive-translator';
+import { RemoteTranslationEngine } from './remote-translation-engine';
 import { TranslationSources } from './translation-sources';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
 import { WordGraph } from './word-graph';
 import { WordGraphArc } from './word-graph-arc';
 
-describe('RemoteInteractiveTranslationSession', () => {
-  it('empty prefix', () => {
+const SOURCE_SEGMENT = ['En', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.'];
+
+describe('InteractiveTranslationSession', () => {
+  it('empty prefix', async () => {
     const env = new TestEnvironment();
-    const result = genSequence(env.session.getCurrentResults()).first()!;
+    const session = await env.startSession();
+    const result = genSequence(session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
-  it('add one complete word to prefix', () => {
+  it('add one complete word to prefix', async () => {
     const env = new TestEnvironment();
-    env.session.appendToPrefix('In', true);
-    const result = genSequence(env.session.getCurrentResults()).first()!;
+    const session = await env.startSession();
+    session.appendToPrefix('In', true);
+    const result = genSequence(session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
-  it('add one partial word to prefix', () => {
+  it('add one partial word to prefix', async () => {
     const env = new TestEnvironment();
-    env.session.appendToPrefix('In', true);
-    env.session.appendToPrefix('t', false);
-    const result = genSequence(env.session.getCurrentResults()).first()!;
+    const session = await env.startSession();
+    session.appendToPrefix('In', true);
+    session.appendToPrefix('t', false);
+    const result = genSequence(session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
-  it('remove one word from prefix', () => {
+  it('remove one word from prefix', async () => {
     const env = new TestEnvironment();
-    env.session.appendWordsToPrefix(['In', 'the', 'beginning']);
-    env.session.setPrefix(['In', 'the'], true);
-    const result = genSequence(env.session.getCurrentResults()).first()!;
+    const session = await env.startSession();
+    session.appendWordsToPrefix(['In', 'the', 'beginning']);
+    session.setPrefix(['In', 'the'], true);
+    const result = genSequence(session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
-  it('remove entire prefix', () => {
+  it('remove entire prefix', async () => {
     const env = new TestEnvironment();
-    env.session.appendWordsToPrefix(['In', 'the', 'beginning']);
-    env.session.setPrefix([], true);
-    const result = genSequence(env.session.getCurrentResults()).first()!;
+    const session = await env.startSession();
+    session.appendWordsToPrefix(['In', 'the', 'beginning']);
+    session.setPrefix([], true);
+    const result = genSequence(session.getCurrentResults()).first()!;
     expect(result.targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
   });
 
-  it('source segment valid', () => {
+  it('source segment valid', async () => {
     const env = new TestEnvironment();
-    expect(env.session.isSourceSegmentValid).toBeTruthy();
+    const session = await env.startSession();
+    expect(session.isSourceSegmentValid).toBeTruthy();
   });
 
-  it('source segment invalid', () => {
-    const mockedRestClient = mock(WebApiClient);
+  it('source segment invalid', async () => {
+    const env = new TestEnvironment();
     const sourceSegment = Array<string>(MAX_SEGMENT_LENGTH + 1);
     sourceSegment.fill('word', 0, -1);
     sourceSegment[sourceSegment.length - 1] = '.';
-    const session = new RemoteInteractiveTranslationSession(
-      instance(mockedRestClient),
-      new ErrorCorrectionModel(),
-      'project01',
-      sourceSegment,
-      new HybridInteractiveTranslationResult(new WordGraph()),
-      true
-    );
+    when(env.mockedEngine.getWordGraph(deepEqual(sourceSegment))).thenResolve(new WordGraph());
+
+    const session = await env.startSession(sourceSegment);
     expect(session.isSourceSegmentValid).toBeFalsy();
   });
 
   it('approve - aligned only', async () => {
     const env = new TestEnvironment();
-    env.session.appendWordsToPrefix(['In', 'the', 'beginning']);
-    await env.session.approve(true);
+    const session = await env.startSession();
+    session.appendWordsToPrefix(['In', 'the', 'beginning']);
+    await session.approve(true);
     verify(
-      env.mockedRestClient.trainSegmentPair(
-        'project01',
-        deepEqual(['En', 'el', 'principio']),
-        deepEqual(['In', 'the', 'beginning']),
-        true
-      )
+      env.mockedEngine.trainSegment(deepEqual(['En', 'el', 'principio']), deepEqual(['In', 'the', 'beginning']), true)
     ).once();
 
-    env.session.appendWordsToPrefix(['the', 'Word', 'already', 'existed', '.']);
-    await env.session.approve(true);
+    session.appendWordsToPrefix(['the', 'Word', 'already', 'existed', '.']);
+    await session.approve(true);
     verify(
-      env.mockedRestClient.trainSegmentPair(
-        'project01',
+      env.mockedEngine.trainSegment(
         deepEqual(['En', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.']),
         deepEqual(['In', 'the', 'beginning', 'the', 'Word', 'already', 'existed', '.']),
         true
@@ -98,11 +94,11 @@ describe('RemoteInteractiveTranslationSession', () => {
 
   it('approve - whole source segment', async () => {
     const env = new TestEnvironment();
-    env.session.appendWordsToPrefix(['In', 'the', 'beginning']);
-    await env.session.approve(false);
+    const session = await env.startSession();
+    session.appendWordsToPrefix(['In', 'the', 'beginning']);
+    await session.approve(false);
     verify(
-      env.mockedRestClient.trainSegmentPair(
-        'project01',
+      env.mockedEngine.trainSegment(
         deepEqual(['En', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.']),
         deepEqual(['In', 'the', 'beginning']),
         true
@@ -134,7 +130,7 @@ function createArc(options: {
     options.words,
     alignment,
     options.sourceSegmentRange,
-    options.isUnknown,
+    new Array<number>(options.words.length).fill(options.isUnknown ? TranslationSources.None : TranslationSources.Smt),
     options.wordConfidences
   );
 }
@@ -148,13 +144,11 @@ function createAlignment(rowCount: number, columnCount: number, pairs: AlignedWo
 }
 
 class TestEnvironment {
-  readonly mockedRestClient = mock(WebApiClient);
-  readonly session: RemoteInteractiveTranslationSession;
+  readonly mockedEngine = mock(RemoteTranslationEngine);
+  readonly interactiveTranslator: InteractiveTranslator;
 
   constructor() {
-    when(this.mockedRestClient.trainSegmentPair('project01', anything(), anything(), anything())).thenResolve();
-
-    const sourceSegment = ['En', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.'];
+    when(this.mockedEngine.trainSegment(anything(), anything(), anything())).thenResolve();
 
     const wordGraph = new WordGraph(
       [
@@ -443,43 +437,12 @@ class TestEnvironment {
       -191.0998
     );
 
-    const ruleTargetSegment = ['In', 'el', 'principio', 'la', 'Palabra', 'ya', 'existía', '.'];
-    const ruleResult = new TranslationResult(
-      sourceSegment,
-      ruleTargetSegment,
-      [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-      [
-        TranslationSources.Transfer,
-        TranslationSources.None,
-        TranslationSources.None,
-        TranslationSources.None,
-        TranslationSources.None,
-        TranslationSources.None,
-        TranslationSources.None,
-        TranslationSources.None
-      ],
-      createAlignment(sourceSegment.length, ruleTargetSegment.length, [
-        { i: 0, j: 0 },
-        { i: 1, j: 1 },
-        { i: 2, j: 2 },
-        { i: 3, j: 3 },
-        { i: 4, j: 4 },
-        { i: 5, j: 5 },
-        { i: 6, j: 6 },
-        { i: 7, j: 7 }
-      ]),
-      []
-    );
+    when(this.mockedEngine.getWordGraph(deepEqual(SOURCE_SEGMENT))).thenResolve(wordGraph);
 
-    const result = new HybridInteractiveTranslationResult(wordGraph, ruleResult);
+    this.interactiveTranslator = new InteractiveTranslator(instance(this.mockedEngine));
+  }
 
-    this.session = new RemoteInteractiveTranslationSession(
-      instance(this.mockedRestClient),
-      new ErrorCorrectionModel(),
-      'project01',
-      sourceSegment,
-      result,
-      true
-    );
+  startSession(segment: string[] = SOURCE_SEGMENT): Promise<InteractiveTranslationSession> {
+    return this.interactiveTranslator.startSession(segment);
   }
 }

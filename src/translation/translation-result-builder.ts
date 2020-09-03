@@ -9,17 +9,13 @@ import { WordAlignmentMatrix } from './word-alignment-matrix';
 export class TranslationResultBuilder {
   public readonly words: string[] = [];
   public readonly confidences: number[] = [];
+  public readonly sources: TranslationSources[] = [];
   public readonly phrases: PhraseInfo[] = [];
 
-  private readonly unknownWords: Set<number> = new Set<number>();
-  private readonly uncorrectedPrefixWords: Set<number> = new Set<number>();
-
-  appendWord(word: string, confidence: number = -1, isUnknown: boolean = false): void {
+  appendWord(word: string, source: TranslationSources, confidence: number = -1): void {
     this.words.push(word);
     this.confidences.push(confidence);
-    if (isUnknown) {
-      this.unknownWords.add(this.words.length - 1);
-    }
+    this.sources.push(source);
   }
 
   markPhrase(sourceSegmentRange: Range, alignment: WordAlignmentMatrix): void {
@@ -44,6 +40,7 @@ export class TranslationResultBuilder {
       switch (wordOp) {
         case EditOperation.Insert:
           this.words.splice(j, 0, prefix[j]);
+          this.sources.splice(j, 0, TranslationSources.Prefix);
           this.confidences.splice(j, 0, -1);
           alignmentColsToCopy.push(-1);
           for (let l = k; l < this.phrases.length; l++) {
@@ -54,6 +51,7 @@ export class TranslationResultBuilder {
 
         case EditOperation.Delete:
           this.words.splice(j, 1);
+          this.sources.splice(j, 1);
           this.confidences.splice(j, 1);
           i++;
           if (k < this.phrases.length) {
@@ -87,8 +85,9 @@ export class TranslationResultBuilder {
 
           if (wordOp === EditOperation.Substitute) {
             this.confidences[j] = -1;
+            this.sources[j] = TranslationSources.Prefix;
           } else if (wordOp === EditOperation.Hit) {
-            this.uncorrectedPrefixWords.add(j);
+            this.sources[j] |= TranslationSources.Prefix;
           }
 
           alignmentColsToCopy.push(i);
@@ -120,7 +119,7 @@ export class TranslationResultBuilder {
     return alignmentColsToCopy.length;
   }
 
-  toResult(sourceSegment: string[], prefixCount: number = 0): TranslationResult {
+  toResult(sourceSegment: string[]): TranslationResult {
     const confidences = this.confidences.slice();
     const sources = new Array<TranslationSources>(this.words.length);
     const alignment = new WordAlignmentMatrix(sourceSegment.length, this.words.length);
@@ -136,17 +135,7 @@ export class TranslationResultBuilder {
           }
         }
 
-        if (j < prefixCount) {
-          sources[j] = TranslationSources.Prefix;
-          if (this.uncorrectedPrefixWords.has(j)) {
-            sources[j] |= TranslationSources.Smt;
-          }
-        } else if (this.unknownWords.has(j)) {
-          sources[j] = TranslationSources.None;
-        } else {
-          sources[j] = TranslationSources.Smt;
-        }
-
+        sources[j] = this.sources[j];
         confidence = Math.min(confidence, this.confidences[j]);
       }
 
