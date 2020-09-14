@@ -5,6 +5,7 @@ import { isControl, isPunctuation, isSymbol } from '../string-utils';
 import { WhitespaceTokenizer } from './whitespace-tokenizer';
 
 const INNER_WORD_PUNCT_REGEX: RegExp = XRegExp("^[&\\-.:=,?@\xAD\xB7\u2010\u2011\u2019\u2027]|['_]+");
+const URL_REGEX: RegExp = XRegExp('^(?:[\\w-]+://?|www[.])[^\\s()<>]+(?:[\\w\\d]+|(?:[^\\p{P}\\s]|/))', 'i');
 
 export class TokenizeContext {
   index: number = 0;
@@ -26,7 +27,13 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
     const tokens: Range[] = [];
     const ctxt = new TokenizeContext();
     for (const charRange of super.tokenizeAsRanges(data, range)) {
-      ctxt.index = charRange.start;
+      const urlMatch = URL_REGEX.exec(data.substring(charRange.start, charRange.end));
+      if (urlMatch != null) {
+        tokens.push(createRange(charRange.start, charRange.start + urlMatch[0].length));
+        ctxt.index = charRange.start + urlMatch[0].length;
+      } else {
+        ctxt.index = charRange.start;
+      }
       ctxt.wordStart = -1;
       ctxt.innerWordPunct = -1;
       while (ctxt.index < charRange.end) {

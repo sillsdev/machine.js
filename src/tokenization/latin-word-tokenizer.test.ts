@@ -103,4 +103,67 @@ describe('LatinWordTokenizer', () => {
     const tokenizer = new LatinWordTokenizer();
     expect(tokenizer.tokenize('This is—a test.')).toEqual(['This', 'is', '—', 'a', 'test', '.']);
   });
+
+  it('string with email address', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenize('This is an email address, name@test.com, in a sentence.')).toEqual([
+      'This',
+      'is',
+      'an',
+      'email',
+      'address',
+      ',',
+      'name@test.com',
+      ',',
+      'in',
+      'a',
+      'sentence',
+      '.'
+    ]);
+  });
+
+  it('string with email address at end of sentence', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenize('Here is an email address: name@test.com.')).toEqual([
+      'Here',
+      'is',
+      'an',
+      'email',
+      'address',
+      ':',
+      'name@test.com',
+      '.'
+    ]);
+  });
+
+  it('string with URL', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenize('This is an email address, http://www.test.com/page.html, in a sentence.')).toEqual([
+      'This',
+      'is',
+      'an',
+      'email',
+      'address',
+      ',',
+      'http://www.test.com/page.html',
+      ',',
+      'in',
+      'a',
+      'sentence',
+      '.'
+    ]);
+  });
+
+  it('string with URL at end of sentence', () => {
+    const tokenizer = new LatinWordTokenizer();
+    expect(tokenizer.tokenize('Here is a url: http://www.test.com/page.html?param=1.')).toEqual([
+      'Here',
+      'is',
+      'a',
+      'url',
+      ':',
+      'http://www.test.com/page.html?param=1',
+      '.'
+    ]);
+  });
 });
