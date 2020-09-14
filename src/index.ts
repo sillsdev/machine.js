@@ -28,6 +28,7 @@ export { RemoteTranslationEngine } from './translation/remote-translation-engine
 export { TranslationSuggestion } from './translation/translation-suggestion';
 export { TranslationSuggester } from './translation/translation-suggester';
 export { PhraseTranslationSuggester } from './translation/phrase-translation-suggester';
+export { ErrorCorrectionModel } from './translation/error-correction-model';
 
 export { HttpClient, HttpResponse } from './web-api/http-client';
 export { RxjsHttpClient } from './web-api/rxjs-http-client';
