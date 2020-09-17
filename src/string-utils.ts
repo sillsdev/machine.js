@@ -67,15 +67,15 @@ export function isLower(c: string): boolean {
 }
 
 export function isSentenceTerminal(str: string): boolean {
-  return genSequence(str).all(c => SENTENCE_TERMINALS.has(c));
+  return str.length > 0 && genSequence(str).all(c => SENTENCE_TERMINALS.has(c));
 }
 
 export function isDelayedSentenceStart(str: string): boolean {
-  return genSequence(str).all(c => DELAYED_SENTENCE_START.has(c));
+  return str.length > 0 && genSequence(str).all(c => DELAYED_SENTENCE_START.has(c));
 }
 
 export function isDelayedSentenceEnd(str: string): boolean {
-  return genSequence(str).all(c => DELAYED_SENTENCE_END.has(c));
+  return str.length > 0 && genSequence(str).all(c => DELAYED_SENTENCE_END.has(c));
 }
 
 export function hasSentenceEnding(str: string): boolean {
