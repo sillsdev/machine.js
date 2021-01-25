@@ -1,1 +1,1 @@
-export const MAX_SEGMENT_LENGTH = 110;
+export const MAX_SEGMENT_LENGTH = 200;
