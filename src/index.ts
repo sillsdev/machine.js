@@ -29,6 +29,8 @@ export { TranslationSuggestion } from './translation/translation-suggestion';
 export { TranslationSuggester } from './translation/translation-suggester';
 export { PhraseTranslationSuggester } from './translation/phrase-translation-suggester';
 export { ErrorCorrectionModel } from './translation/error-correction-model';
+export { INITIAL_STATE, WordGraph } from './translation/word-graph';
+export { WordGraphArc } from './translation/word-graph-arc';
 
 export { HttpClient, HttpResponse } from './web-api/http-client';
 export { RxjsHttpClient } from './web-api/rxjs-http-client';
