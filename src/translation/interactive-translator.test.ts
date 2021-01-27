@@ -105,6 +105,39 @@ describe('InteractiveTranslator', () => {
       )
     ).once();
   });
+
+  it('multiple suggestions - empty prefix', async () => {
+    const env = new TestEnvironment();
+    env.useSimpleWordGraph();
+    const translator = await env.createTranslator();
+    const results = genSequence(translator.getCurrentResults())
+      .take(2)
+      .toArray();
+    expect(results[0].targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
+    expect(results[1].targetSegment.join(' ')).toEqual('In the start the Word already existía .');
+  });
+
+  it('multiple suggestions - nonempty prefix', async () => {
+    const env = new TestEnvironment();
+    env.useSimpleWordGraph();
+    const translator = await env.createTranslator();
+
+    translator.appendWordsToPrefix(['In', 'the']);
+
+    let results = genSequence(translator.getCurrentResults())
+      .take(2)
+      .toArray();
+    expect(results[0].targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
+    expect(results[1].targetSegment.join(' ')).toEqual('In the start the Word already existía .');
+
+    translator.appendWordsToPrefix(['beginning']);
+
+    results = genSequence(translator.getCurrentResults())
+      .take(2)
+      .toArray();
+    expect(results[0].targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
+    expect(results[1].targetSegment.join(' ')).toEqual('In the beginning his Word already existía .');
+  });
 });
 
 interface AlignedWordPair {
@@ -435,6 +468,86 @@ class TestEnvironment {
       ],
       [12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
       -191.0998
+    );
+
+    when(this.mockedEngine.getWordGraph(deepEqual(SOURCE_SEGMENT))).thenResolve(wordGraph);
+  }
+
+  useSimpleWordGraph(): void {
+    const wordGraph = new WordGraph(
+      [
+        createArc({
+          prevState: 0,
+          nextState: 1,
+          score: -10,
+          words: ['In', 'the', 'beginning'],
+          wordConfidences: [0.5, 0.5, 0.5],
+          sourceSegmentRange: createRange(0, 3),
+          isUnknown: false,
+          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 2 }]
+        }),
+        createArc({
+          prevState: 0,
+          nextState: 1,
+          score: -11,
+          words: ['In', 'the', 'start'],
+          wordConfidences: [0.5, 0.5, 0.4],
+          sourceSegmentRange: createRange(0, 3),
+          isUnknown: false,
+          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 2 }]
+        }),
+        createArc({
+          prevState: 1,
+          nextState: 2,
+          score: -10,
+          words: ['the', 'Word'],
+          wordConfidences: [0.5, 0.5],
+          sourceSegmentRange: createRange(3, 5),
+          isUnknown: false,
+          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+        }),
+        createArc({
+          prevState: 1,
+          nextState: 2,
+          score: -11,
+          words: ['his', 'Word'],
+          wordConfidences: [0.4, 0.5],
+          sourceSegmentRange: createRange(3, 5),
+          isUnknown: false,
+          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+        }),
+        createArc({
+          prevState: 2,
+          nextState: 3,
+          score: -10,
+          words: ['already'],
+          wordConfidences: [0.5],
+          sourceSegmentRange: createRange(5, 6),
+          isUnknown: false,
+          alignment: [{ i: 0, j: 0 }]
+        }),
+        createArc({
+          prevState: 3,
+          nextState: 4,
+          score: 50,
+          words: ['existía'],
+          wordConfidences: [0.0],
+          sourceSegmentRange: createRange(6, 7),
+          isUnknown: true,
+          alignment: [{ i: 0, j: 0 }]
+        }),
+        createArc({
+          prevState: 4,
+          nextState: 5,
+          score: -10,
+          words: ['.'],
+          wordConfidences: [0.5],
+          sourceSegmentRange: createRange(7, 8),
+          isUnknown: false,
+          alignment: [{ i: 0, j: 0 }]
+        })
+      ],
+      [5]
     );
 
     when(this.mockedEngine.getWordGraph(deepEqual(SOURCE_SEGMENT))).thenResolve(wordGraph);

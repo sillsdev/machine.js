@@ -86,18 +86,7 @@ export class ErrorCorrectionWordGraphProcessor {
   }
 
   *getResults(): IterableIterator<TranslationResult> {
-    const heap = new MaxHeap<Hypothesis>((x, y) => {
-      if (x.score < y.score) {
-        return -1;
-      } else if (x.score > y.score) {
-        return 1;
-      } else {
-        return 0;
-      }
-    });
-    this.getStateHypotheses(heap);
-    this.getSubStateHypotheses(heap);
-
+    const heap = this.getHypotheses();
     for (const hypothesis of this.search(heap)) {
       const builder = new TranslationResultBuilder();
       this.buildCorrectionFromHypothesis(builder, this.prevPrefix, this.prevIsLastWordComplete, hypothesis);
@@ -232,24 +221,24 @@ export class ErrorCorrectionWordGraphProcessor {
     }
   }
 
-  private getStateHypotheses(heap: MaxHeap<Hypothesis>): void {
-    for (const state of this.statesInvolvedInArcs) {
-      const restScore = this.restScores[state];
-      const bestScores = this.stateBestScores[state];
+  private getHypotheses(): MaxHeap<Hypothesis> {
+    const heap = new MaxHeap<Hypothesis>((x, y) => {
+      if (x.score < y.score) {
+        return -1;
+      } else if (x.score > y.score) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
 
-      const score = bestScores[bestScores.length - 1] + this.wordGraphWeight * restScore;
-      heap.push(new Hypothesis(score, state));
-    }
-  }
-
-  private getSubStateHypotheses(heap: MaxHeap<Hypothesis>): void {
+    // add hypotheses starting before each word in each arc
     for (let arcIndex = 0; arcIndex < this.wordGraph.arcs.length; arcIndex++) {
       const arc = this.wordGraph.arcs[arcIndex];
-      if (arc.words.length > 1 && !this.isArcPruned(arc)) {
+      if (!this.isArcPruned(arc)) {
         const wordGraphScore = this.stateWordGraphScores[arc.prevState] + arc.score;
-
-        for (let i = 0; i < arc.words.length; i++) {
-          const esi = this.arcEcmScoreInfos[arcIndex][i];
+        for (let i = -1; i < arc.words.length - 1; i++) {
+          const esi = i === -1 ? this.stateEcmScoreInfos[arc.prevState] : this.arcEcmScoreInfos[arcIndex][i];
           const score =
             this.wordGraphWeight * wordGraphScore +
             this.ecmWeight * -esi.scores[esi.scores.length - 1] +
@@ -258,6 +247,17 @@ export class ErrorCorrectionWordGraphProcessor {
         }
       }
     }
+
+    // add hypotheses starting before each final state
+    for (const state of this.wordGraph.finalStates) {
+      const restScore = this.restScores[state];
+      const bestScores = this.stateBestScores[state];
+
+      const score = bestScores[bestScores.length - 1] + this.wordGraphWeight * restScore;
+      heap.push(new Hypothesis(score, state));
+    }
+
+    return heap;
   }
 
   private isArcPruned(arc: WordGraphArc): boolean {
@@ -411,7 +411,7 @@ class Hypothesis {
   constructor(
     public score: number,
     public readonly startState: number,
-    public readonly startArcIndex: number = -1,
+    public readonly startArcIndex = -1,
     public readonly startArcWordIndex = -1
   ) {}
 
