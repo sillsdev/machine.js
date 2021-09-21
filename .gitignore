@@ -3,6 +3,9 @@
 /ts3.4
 *.tgz
 
+# test output
+/junit.xml
+
 # dependencies
 /node_modules
 

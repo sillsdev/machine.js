@@ -199,9 +199,12 @@ export class SegmentEditDistance extends EditDistance<string[], string> {
     return x === y || (!isComplete && x.startsWith(y));
   }
 
-  private getOpCounts(
-    ops: EditOperation[]
-  ): { hitCount: number; insCount: number; substCount: number; delCount: number } {
+  private getOpCounts(ops: EditOperation[]): {
+    hitCount: number;
+    insCount: number;
+    substCount: number;
+    delCount: number;
+  } {
     let hitCount = 0;
     let insCount = 0;
     let substCount = 0;

@@ -20,7 +20,7 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
 
   constructor(abbreviations: string[] = []) {
     super();
-    this.abbreviations = new Set<string>(abbreviations.map(a => a.toLowerCase()));
+    this.abbreviations = new Set<string>(abbreviations.map((a) => a.toLowerCase()));
   }
 
   tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {
@@ -92,7 +92,7 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
         } else {
           tokenRanges = [
             createRange(ctxt.wordStart, ctxt.innerWordPunct),
-            createRange(ctxt.innerWordPunct, ctxt.index)
+            createRange(ctxt.innerWordPunct, ctxt.index),
           ];
         }
         ctxt.wordStart = ctxt.index;

@@ -21,7 +21,7 @@ const SENTENCE_TERMINALS: Set<string> = new Set<string>([
   '\uFF01',
   '\uFF0E',
   '\uFF1F',
-  '\uFF61'
+  '\uFF61',
 ]);
 const QUOTATION_MARKS: Set<string> = new Set<string>([
   '"',
@@ -37,7 +37,7 @@ const QUOTATION_MARKS: Set<string> = new Set<string>([
   '«',
   '»',
   '‹',
-  '›'
+  '›',
 ]);
 const DELAYED_SENTENCE_START: Set<string> = new Set<string>(
   genSequence(QUOTATION_MARKS.values()).concat(['(', '[', '<', '{'])
@@ -67,15 +67,15 @@ export function isLower(c: string): boolean {
 }
 
 export function isSentenceTerminal(str: string): boolean {
-  return str.length > 0 && genSequence(str).all(c => SENTENCE_TERMINALS.has(c));
+  return str.length > 0 && genSequence(str).all((c) => SENTENCE_TERMINALS.has(c));
 }
 
 export function isDelayedSentenceStart(str: string): boolean {
-  return str.length > 0 && genSequence(str).all(c => DELAYED_SENTENCE_START.has(c));
+  return str.length > 0 && genSequence(str).all((c) => DELAYED_SENTENCE_START.has(c));
 }
 
 export function isDelayedSentenceEnd(str: string): boolean {
-  return str.length > 0 && genSequence(str).all(c => DELAYED_SENTENCE_END.has(c));
+  return str.length > 0 && genSequence(str).all((c) => DELAYED_SENTENCE_END.has(c));
 }
 
 export function hasSentenceEnding(str: string): boolean {

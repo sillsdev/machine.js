@@ -15,7 +15,7 @@ describe('LineSegmentTokenizer', () => {
     const tokenizer = new LineSegmentTokenizer();
     expect(tokenizer.tokenize('This is the first sentence.\nThis is the second sentence.')).toEqual([
       'This is the first sentence.',
-      'This is the second sentence.'
+      'This is the second sentence.',
     ]);
   });
 
@@ -33,7 +33,7 @@ describe('LineSegmentTokenizer', () => {
     const tokenizer = new LineSegmentTokenizer();
     expect(tokenizer.tokenize('This is the first sentence.\nThis is a partial sentence ')).toEqual([
       'This is the first sentence.',
-      'This is a partial sentence '
+      'This is a partial sentence ',
     ]);
   });
 
@@ -42,7 +42,7 @@ describe('LineSegmentTokenizer', () => {
     expect(tokenizer.tokenize('This is the first sentence.\n\nThis is the third sentence.')).toEqual([
       'This is the first sentence.',
       '',
-      'This is the third sentence.'
+      'This is the third sentence.',
     ]);
   });
 
@@ -50,7 +50,7 @@ describe('LineSegmentTokenizer', () => {
     const tokenizer = new LineSegmentTokenizer();
     expect(tokenizer.tokenize('This is the first sentence. \nThis is the second sentence.')).toEqual([
       'This is the first sentence. ',
-      'This is the second sentence.'
+      'This is the second sentence.',
     ]);
   });
 });

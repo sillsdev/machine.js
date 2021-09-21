@@ -3,5 +3,5 @@ export enum BuildStates {
   Active = 'ACTIVE',
   Completed = 'COMPLETED',
   Faulted = 'FAULTED',
-  Canceled = 'CANCELED'
+  Canceled = 'CANCELED',
 }

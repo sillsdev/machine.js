@@ -9,13 +9,15 @@ export class RxjsHttpClient extends HttpClient {
   }
 
   get<T>(url: string): Observable<HttpResponse<T>> {
-    return ajax.get(this.getUrl(url), this.getHeaders()).pipe(map(res => ({ status: res.status, data: res.response })));
+    return ajax
+      .get(this.getUrl(url), this.getHeaders())
+      .pipe(map((res) => ({ status: res.status, data: res.response })));
   }
 
   post<T>(url: string, body?: any): Observable<HttpResponse<T>> {
     return ajax
       .post(this.getUrl(url), body, this.getHeaders())
-      .pipe(map(res => ({ status: res.status, data: res.response })));
+      .pipe(map((res) => ({ status: res.status, data: res.response })));
   }
 
   protected getHeaders(): any {

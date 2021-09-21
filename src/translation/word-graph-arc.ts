@@ -16,6 +16,6 @@ export class WordGraphArc {
   ) {}
 
   get isUnknown(): boolean {
-    return genSequence(this.wordSources).all(s => s === TranslationSources.None);
+    return genSequence(this.wordSources).all((s) => s === TranslationSources.None);
   }
 }

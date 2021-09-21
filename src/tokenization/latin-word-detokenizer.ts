@@ -6,7 +6,7 @@ enum QuoteType {
   DoubleQuotation,
   SingleQuotation,
   DoubleAngle,
-  SingleAngle
+  SingleAngle,
 }
 
 const QUOTATION_MARKS = new Map<string, QuoteType>([
@@ -26,7 +26,7 @@ const QUOTATION_MARKS = new Map<string, QuoteType>([
   ['»', QuoteType.DoubleAngle],
 
   ['‹', QuoteType.SingleAngle],
-  ['›', QuoteType.SingleAngle]
+  ['›', QuoteType.SingleAngle],
 ]);
 
 const MERGE_RIGHT_REGEX: RegExp = XRegExp('^\\p{Sc}|[([{¿¡<]$');

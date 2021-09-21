@@ -33,7 +33,10 @@ describe('WebApiClient', () => {
               confidences: [0.4, 0.5],
               sourceSegmentRange: { start: 0, end: 2 },
               sources: [TranslationSources.Smt, TranslationSources.Smt],
-              alignment: [{ sourceIndex: 0, targetIndex: 0 }, { sourceIndex: 1, targetIndex: 1 }]
+              alignment: [
+                { sourceIndex: 0, targetIndex: 0 },
+                { sourceIndex: 1, targetIndex: 1 },
+              ],
             },
             {
               prevState: 1,
@@ -43,7 +46,7 @@ describe('WebApiClient', () => {
               confidences: [0.6],
               sourceSegmentRange: { start: 2, end: 3 },
               sources: [TranslationSources.Smt],
-              alignment: [{ sourceIndex: 0, targetIndex: 0 }]
+              alignment: [{ sourceIndex: 0, targetIndex: 0 }],
             },
             {
               prevState: 2,
@@ -53,7 +56,7 @@ describe('WebApiClient', () => {
               confidences: [0],
               sourceSegmentRange: { start: 3, end: 4 },
               sources: [TranslationSources.None],
-              alignment: [{ sourceIndex: 0, targetIndex: 0 }]
+              alignment: [{ sourceIndex: 0, targetIndex: 0 }],
             },
             {
               prevState: 3,
@@ -63,10 +66,10 @@ describe('WebApiClient', () => {
               confidences: [0.7],
               sourceSegmentRange: { start: 4, end: 5 },
               sources: [TranslationSources.Smt],
-              alignment: [{ sourceIndex: 0, targetIndex: 0 }]
-            }
-          ]
-        }
+              alignment: [{ sourceIndex: 0, targetIndex: 0 }],
+            },
+          ],
+        },
       })
     );
 
@@ -97,7 +100,7 @@ describe('WebApiClient', () => {
     expect.assertions(12);
     let expectedStep = -1;
     env.client.train('project01').subscribe(
-      progress => {
+      (progress) => {
         expectedStep++;
         expect(progress.percentCompleted).toEqual(expectedStep / 10);
       },
@@ -110,14 +113,15 @@ describe('WebApiClient', () => {
 
   it('train with error while starting build', () => {
     const env = new TestEnvironment();
-    when(env.mockedHttpClient.post<BuildDto>('translation/builds', 'engine01')).thenReturn(
+    when(env.mockedHttpClient.post<BuildDto>('translation/builds', JSON.stringify('engine01'))).thenReturn(
       throwError(new Error('Error while creating build.'))
     );
 
     expect.assertions(1);
-    env.client
-      .train('project01')
-      .subscribe(() => {}, err => expect(err.message).toEqual('Error while creating build.'));
+    env.client.train('project01').subscribe(
+      () => {},
+      (err) => expect(err.message).toEqual('Error while creating build.')
+    );
   });
 
   it('train with error during build', () => {
@@ -133,18 +137,16 @@ describe('WebApiClient', () => {
           engine: { id: 'engine01', href: 'translation/engines/id:engine01' },
           percentCompleted: 0.1,
           message: 'broken',
-          state: BuildStates.Faulted
-        }
+          state: BuildStates.Faulted,
+        },
       })
     );
 
     expect.assertions(2);
-    env.client
-      .train('project01')
-      .subscribe(
-        progress => expect(progress.percentCompleted).toEqual(0),
-        err => expect(err.message).toEqual('Error occurred during build: broken')
-      );
+    env.client.train('project01').subscribe(
+      (progress) => expect(progress.percentCompleted).toEqual(0),
+      (err) => expect(err.message).toEqual('Error occurred during build: broken')
+    );
   });
 
   it('listen for training status with no errors', () => {
@@ -159,8 +161,8 @@ describe('WebApiClient', () => {
           engine: { id: 'engine01', href: 'translation/engines/id:engine01' },
           percentCompleted: 0,
           message: '',
-          state: BuildStates.Pending
-        }
+          state: BuildStates.Pending,
+        },
       })
     );
     env.addBuildProgress();
@@ -168,7 +170,7 @@ describe('WebApiClient', () => {
     expect.assertions(12);
     let expectedStep = -1;
     env.client.listenForTrainingStatus('project01').subscribe(
-      progress => {
+      (progress) => {
         expectedStep++;
         expect(progress.percentCompleted).toEqual(expectedStep / 10);
       },
@@ -197,8 +199,8 @@ class TestEnvironment {
           isShared: false,
           projects: [{ id: 'project01', href: 'translation/projects/id:project01' }],
           confidence: 0.2,
-          trainedSegmentCount: 100
-        }
+          trainedSegmentCount: 100,
+        },
       })
     );
     this.client = new WebApiClient(instance(this.mockedHttpClient));
@@ -215,8 +217,8 @@ class TestEnvironment {
           engine: { id: 'engine01', href: 'translation/engines/id:engine01' },
           percentCompleted: 0,
           message: '',
-          state: BuildStates.Pending
-        }
+          state: BuildStates.Pending,
+        },
       })
     );
   }
@@ -233,8 +235,8 @@ class TestEnvironment {
             engine: { id: 'engine01', href: 'translation/engines/id:engine01' },
             percentCompleted: i / 10,
             message: '',
-            state: i === 10 ? BuildStates.Completed : BuildStates.Active
-          }
+            state: i === 10 ? BuildStates.Completed : BuildStates.Active,
+          },
         })
       );
     }

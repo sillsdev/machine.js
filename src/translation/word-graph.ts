@@ -97,7 +97,7 @@ export class WordGraph {
     if (stateInfo == null) {
       stateInfo = {
         prevArcIndices: [],
-        nextArcIndices: []
+        nextArcIndices: [],
       };
       this.states.set(state, stateInfo);
     }

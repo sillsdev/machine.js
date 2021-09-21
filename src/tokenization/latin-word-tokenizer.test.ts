@@ -41,7 +41,7 @@ describe('LatinWordTokenizer', () => {
       'went',
       'to',
       'Washington',
-      '.'
+      '.',
     ]);
   });
 
@@ -64,7 +64,7 @@ describe('LatinWordTokenizer', () => {
       'the',
       'dog',
       '.',
-      '”'
+      '”',
     ]);
 
     expect(tokenizer.tokenize("i ha''on 'ot ano'.")).toEqual(['i', "ha''on", "'ot", "ano'", '.']);
@@ -85,7 +85,7 @@ describe('LatinWordTokenizer', () => {
       'the',
       'dog',
       '.',
-      "'"
+      "'",
     ]);
   });
 
@@ -118,7 +118,7 @@ describe('LatinWordTokenizer', () => {
       'in',
       'a',
       'sentence',
-      '.'
+      '.',
     ]);
   });
 
@@ -132,7 +132,7 @@ describe('LatinWordTokenizer', () => {
       'address',
       ':',
       'name@test.com',
-      '.'
+      '.',
     ]);
   });
 
@@ -150,7 +150,7 @@ describe('LatinWordTokenizer', () => {
       'in',
       'a',
       'sentence',
-      '.'
+      '.',
     ]);
   });
 
@@ -163,7 +163,7 @@ describe('LatinWordTokenizer', () => {
       'url',
       ':',
       'http://www.test.com/page.html?param=1',
-      '.'
+      '.',
     ]);
   });
 });

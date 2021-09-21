@@ -12,7 +12,7 @@ export abstract class HttpClient {
   protected getHeaders(): any {
     return {
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     };
   }
 }

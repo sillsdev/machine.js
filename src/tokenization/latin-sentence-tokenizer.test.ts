@@ -15,7 +15,7 @@ describe('LatinSentenceTokenizer', () => {
     const tokenizer = new LatinSentenceTokenizer();
     expect(tokenizer.tokenize('This is the first sentence.\nThis is the second sentence.')).toEqual([
       'This is the first sentence.',
-      'This is the second sentence.'
+      'This is the second sentence.',
     ]);
   });
 
@@ -23,7 +23,7 @@ describe('LatinSentenceTokenizer', () => {
     const tokenizer = new LatinSentenceTokenizer();
     expect(tokenizer.tokenize('This is the first sentence. This is the second sentence.')).toEqual([
       'This is the first sentence.',
-      'This is the second sentence.'
+      'This is the second sentence.',
     ]);
   });
 
@@ -31,7 +31,7 @@ describe('LatinSentenceTokenizer', () => {
     const tokenizer = new LatinSentenceTokenizer();
     expect(tokenizer.tokenize('"This is the first sentence." This is the second sentence.')).toEqual([
       '"This is the first sentence."',
-      'This is the second sentence.'
+      'This is the second sentence.',
     ]);
   });
 
@@ -39,7 +39,7 @@ describe('LatinSentenceTokenizer', () => {
     const tokenizer = new LatinSentenceTokenizer();
     expect(tokenizer.tokenize('"This is the first sentence!" he said. This is the second sentence.')).toEqual([
       '"This is the first sentence!" he said.',
-      'This is the second sentence.'
+      'This is the second sentence.',
     ]);
   });
 
@@ -47,7 +47,7 @@ describe('LatinSentenceTokenizer', () => {
     const tokenizer = new LatinSentenceTokenizer();
     expect(tokenizer.tokenize('This is the first sentence. (This is the second sentence.)')).toEqual([
       'This is the first sentence.',
-      '(This is the second sentence.)'
+      '(This is the second sentence.)',
     ]);
   });
 
@@ -55,7 +55,7 @@ describe('LatinSentenceTokenizer', () => {
     const tokenizer = new LatinSentenceTokenizer(['mr', 'dr', 'ms']);
     expect(tokenizer.tokenize('Mr. Smith went to Washington. This is the second sentence.')).toEqual([
       'Mr. Smith went to Washington.',
-      'This is the second sentence.'
+      'This is the second sentence.',
     ]);
   });
 

@@ -261,7 +261,7 @@ export class ErrorCorrectionWordGraphProcessor {
   }
 
   private isArcPruned(arc: WordGraphArc): boolean {
-    return !arc.isUnknown && arc.wordConfidences.some(c => c < this.confidenceThreshold);
+    return !arc.isUnknown && arc.wordConfidences.some((c) => c < this.confidenceThreshold);
   }
 
   private *search(heap: MaxHeap<Hypothesis>): IterableIterator<Hypothesis> {

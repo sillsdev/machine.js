@@ -23,7 +23,7 @@ describe('ZwspWordTokenizer', () => {
       'នារ',
       'ត៝ល់',
       'ព្វាន់',
-      '។'
+      '។',
     ]);
   });
 
@@ -42,7 +42,7 @@ describe('ZwspWordTokenizer', () => {
       'เขา',
       'ถาม',
       'ผม',
-      '.'
+      '.',
     ]);
 
     expect(tokenizer.tokenize('ช้าง, ม้า, วัว, กระบือ')).toEqual(['ช้าง', ',', 'ม้า', ',', 'วัว', ',', 'กระบือ']);
@@ -57,7 +57,7 @@ describe('ZwspWordTokenizer', () => {
       ' ',
       '7,999',
       ' ',
-      'บาท'
+      'บาท',
     ]);
   });
 
@@ -73,7 +73,7 @@ describe('ZwspWordTokenizer', () => {
       'នារ',
       'ត៝ល់',
       'ព្វាន់',
-      '។'
+      '។',
     ]);
 
     expect(tokenizer.tokenize('ไป\u200bไหน\u200bมา?  เขา\u200bถาม\u200bผม.')).toEqual([
@@ -84,7 +84,7 @@ describe('ZwspWordTokenizer', () => {
       'เขา',
       'ถาม',
       'ผม',
-      '.'
+      '.',
     ]);
   });
 });

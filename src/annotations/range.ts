@@ -18,7 +18,7 @@ export function createRange<TOffset = number>(start: TOffset, end?: TOffset): Ra
     if (typeof end === 'number') {
       endNum = end;
     }
-    return (new NumberRange(start, endNum) as unknown) as Range<TOffset>;
+    return new NumberRange(start, endNum) as unknown as Range<TOffset>;
   }
 
   throw Error('Range type not supported.');
