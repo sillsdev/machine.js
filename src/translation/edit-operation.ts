@@ -4,5 +4,5 @@ export enum EditOperation {
   Insert,
   Delete,
   PrefixDelete,
-  Substitute
+  Substitute,
 }

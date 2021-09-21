@@ -4,13 +4,13 @@ export enum DetokenizeOperation {
   NoOperation,
   MergeLeft,
   MergeRight,
-  MergeBoth
+  MergeBoth,
 }
 
 export abstract class StringDetokenizer implements Detokenizer {
   detokenize(tokens: string[]): string {
     const ctxt = this.createContext();
-    const ops = tokens.map(t => this.getOperation(ctxt, t));
+    const ops = tokens.map((t) => this.getOperation(ctxt, t));
     let output = '';
     for (let i = 0; i < tokens.length; i++) {
       output += tokens[i];

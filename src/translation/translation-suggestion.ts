@@ -8,6 +8,6 @@ export class TranslationSuggestion {
   ) {}
 
   get targetWords(): string[] {
-    return this.targetWordIndices.map(i => this.result.targetSegment[i]);
+    return this.targetWordIndices.map((i) => this.result.targetSegment[i]);
   }
 }

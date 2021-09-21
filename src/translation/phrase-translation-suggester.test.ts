@@ -39,7 +39,7 @@ function createResult(sourceLen: number, prefixLen: number, target: string, conf
   }
 
   return new TranslationResult(
-    Array<number>(sourceLen).map(index => index.toString()),
+    Array<number>(sourceLen).map((index) => index.toString()),
     targetWords,
     targetConfidences,
     targetSources,
@@ -93,7 +93,7 @@ describe('PhraseTranslationSuggester', () => {
     const results = [
       createResult(5, 0, 'this is a test .', [0.5, 0.5, 0.5, 0.5, 0.5]),
       createResult(5, 0, 'that is a test .', [0.5, 0.5, 0.5, 0.5, 0.5]),
-      createResult(5, 0, 'other is a test .', [0.5, 0.5, 0.5, 0.5, 0.5])
+      createResult(5, 0, 'other is a test .', [0.5, 0.5, 0.5, 0.5, 0.5]),
     ];
     const suggester = new PhraseTranslationSuggester();
     suggester.confidenceThreshold = 0.2;
@@ -106,7 +106,7 @@ describe('PhraseTranslationSuggester', () => {
   it('ignores duplicate suggestion', () => {
     const results = [
       createResult(6, 0, 'this is a test .', [0.5, 0.5, 0.5, 0.5, 0.5]),
-      createResult(6, 0, 'is a test . second sentence', [0.5, 0.5, 0.5, 0.5, 0.1, 0.1])
+      createResult(6, 0, 'is a test . second sentence', [0.5, 0.5, 0.5, 0.5, 0.1, 0.1]),
     ];
     const suggester = new PhraseTranslationSuggester();
     suggester.confidenceThreshold = 0.2;
@@ -118,7 +118,7 @@ describe('PhraseTranslationSuggester', () => {
   it('ignores good suggestion that starts with punctuation', () => {
     const results = [
       createResult(6, 0, ', this is a test .', [0.5, 0.5, 0.5, 0.5, 0.5, 0.5]),
-      createResult(6, 0, 'this is a test .', [0.5, 0.5, 0.5, 0.5, 0.5])
+      createResult(6, 0, 'this is a test .', [0.5, 0.5, 0.5, 0.5, 0.5]),
     ];
     const suggester = new PhraseTranslationSuggester();
     suggester.confidenceThreshold = 0.2;
@@ -130,7 +130,7 @@ describe('PhraseTranslationSuggester', () => {
   it('ignores all suggestions after a bad suggestion', () => {
     const results = [
       createResult(5, 0, 'this is a test .', [0.1, 0.5, 0.5, 0.5, 0.5]),
-      createResult(5, 0, 'that is a test .', [0.5, 0.5, 0.5, 0.5, 0.5])
+      createResult(5, 0, 'that is a test .', [0.5, 0.5, 0.5, 0.5, 0.5]),
     ];
     const suggester = new PhraseTranslationSuggester();
     suggester.confidenceThreshold = 0.2;

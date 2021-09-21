@@ -34,7 +34,7 @@ export class WebApiClient {
       .post<TranslationResultDto[]>(`translation/engines/project:${projectId}/actions/translate/${n}`, sourceSegment)
       .toPromise();
     const dtos = response.data as TranslationResultDto[];
-    return dtos.map(dto => this.createTranslationResult(dto, sourceSegment));
+    return dtos.map((dto) => this.createTranslationResult(dto, sourceSegment));
   }
 
   async getWordGraph(projectId: string, sourceSegment: string[]): Promise<WordGraph> {
@@ -56,19 +56,19 @@ export class WebApiClient {
 
   async startTraining(projectId: string): Promise<void> {
     await this.getEngine(projectId)
-      .pipe(mergeMap(e => this.createBuild(e.id)))
+      .pipe(mergeMap((e) => this.createBuild(e.id)))
       .toPromise();
   }
 
   train(projectId: string): Observable<ProgressStatus> {
     return this.getEngine(projectId).pipe(
-      mergeMap(e => this.createBuild(e.id)),
-      mergeMap(b => this.pollBuildProgress('id', b.id, b.revision + 1).pipe(startWith(b)))
+      mergeMap((e) => this.createBuild(e.id)),
+      mergeMap((b) => this.pollBuildProgress('id', b.id, b.revision + 1).pipe(startWith(b)))
     );
   }
 
   listenForTrainingStatus(projectId: string): Observable<ProgressStatus> {
-    return this.getEngine(projectId).pipe(mergeMap(e => this.pollBuildProgress('engine', e.id, 0)));
+    return this.getEngine(projectId).pipe(mergeMap((e) => this.pollBuildProgress('engine', e.id, 0)));
   }
 
   async getEngineStats(projectId: string): Promise<TranslationEngineStats> {
@@ -77,18 +77,20 @@ export class WebApiClient {
   }
 
   private getEngine(projectId: string): Observable<EngineDto> {
-    return this.http.get<EngineDto>(`translation/engines/project:${projectId}`).pipe(map(res => res.data as EngineDto));
+    return this.http
+      .get<EngineDto>(`translation/engines/project:${projectId}`)
+      .pipe(map((res) => res.data as EngineDto));
   }
 
   private createBuild(engineId: string): Observable<BuildDto> {
     return this.http
       .post<BuildDto>('translation/builds', JSON.stringify(engineId))
-      .pipe(map(res => res.data as BuildDto));
+      .pipe(map((res) => res.data as BuildDto));
   }
 
   private pollBuildProgress(locatorType: string, locator: string, minRevision: number): Observable<ProgressStatus> {
     return this.getBuildProgress(locatorType, locator, minRevision).pipe(
-      expand(buildDto => {
+      expand((buildDto) => {
         if (buildDto != null) {
           locatorType = 'id';
           locator = buildDto.id;
@@ -96,9 +98,9 @@ export class WebApiClient {
         }
         return this.getBuildProgress(locatorType, locator, minRevision);
       }),
-      filter(buildDto => buildDto != null),
-      map(buildDto => buildDto as BuildDto),
-      takeWhile(buildDto => buildDto.state === BuildStates.Pending || buildDto.state === BuildStates.Active, true)
+      filter((buildDto) => buildDto != null),
+      map((buildDto) => buildDto as BuildDto),
+      takeWhile((buildDto) => buildDto.state === BuildStates.Pending || buildDto.state === BuildStates.Active, true)
     );
   }
 
@@ -108,13 +110,13 @@ export class WebApiClient {
     minRevision: number
   ): Observable<BuildDto | undefined> {
     return this.http.get<BuildDto>(`translation/builds/${locatorType}:${locator}?minRevision=${minRevision}`).pipe(
-      map(res => {
+      map((res) => {
         if (res.data != null && res.data.state === BuildStates.Faulted) {
           throw new Error('Error occurred during build: ' + res.data.message);
         }
         return res.data;
       }),
-      catchError(err => {
+      catchError((err) => {
         if (err.status === 404) {
           return of(undefined);
         } else {
@@ -155,7 +157,7 @@ export class WebApiClient {
       dto.confidences,
       dto.sources,
       this.createWordAlignmentMatrix(dto.alignment, sourceSegment.length, dto.target.length),
-      dto.phrases.map(p => this.createPhrase(p))
+      dto.phrases.map((p) => this.createPhrase(p))
     );
   }
 

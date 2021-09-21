@@ -110,9 +110,7 @@ describe('InteractiveTranslator', () => {
     const env = new TestEnvironment();
     env.useSimpleWordGraph();
     const translator = await env.createTranslator();
-    const results = genSequence(translator.getCurrentResults())
-      .take(2)
-      .toArray();
+    const results = genSequence(translator.getCurrentResults()).take(2).toArray();
     expect(results[0].targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
     expect(results[1].targetSegment.join(' ')).toEqual('In the start the Word already existía .');
   });
@@ -124,17 +122,13 @@ describe('InteractiveTranslator', () => {
 
     translator.appendWordsToPrefix(['In', 'the']);
 
-    let results = genSequence(translator.getCurrentResults())
-      .take(2)
-      .toArray();
+    let results = genSequence(translator.getCurrentResults()).take(2).toArray();
     expect(results[0].targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
     expect(results[1].targetSegment.join(' ')).toEqual('In the start the Word already existía .');
 
     translator.appendWordsToPrefix(['beginning']);
 
-    results = genSequence(translator.getCurrentResults())
-      .take(2)
-      .toArray();
+    results = genSequence(translator.getCurrentResults()).take(2).toArray();
     expect(results[0].targetSegment.join(' ')).toEqual('In the beginning the Word already existía .');
     expect(results[1].targetSegment.join(' ')).toEqual('In the beginning his Word already existía .');
   });
@@ -193,7 +187,10 @@ class TestEnvironment {
           wordConfidences: [0.00006755903, 0.0116618536],
           sourceSegmentRange: createRange(0, 2),
           isUnknown: false,
-          alignment: [{ i: 0, j: 1 }, { i: 1, j: 0 }]
+          alignment: [
+            { i: 0, j: 1 },
+            { i: 1, j: 0 },
+          ],
         }),
         createArc({
           prevState: 0,
@@ -203,7 +200,10 @@ class TestEnvironment {
           wordConfidences: [0.355293363, 0.0000941652761],
           sourceSegmentRange: createRange(0, 2),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 0,
@@ -213,7 +213,10 @@ class TestEnvironment {
           wordConfidences: [0.355293363, 0.5004668],
           sourceSegmentRange: createRange(0, 2),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 0,
@@ -223,7 +226,7 @@ class TestEnvironment {
           wordConfidences: [0.355293363],
           sourceSegmentRange: createRange(0, 1),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 3,
@@ -233,7 +236,7 @@ class TestEnvironment {
           wordConfidences: [0.348795831],
           sourceSegmentRange: createRange(2, 3),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 4,
@@ -243,7 +246,10 @@ class TestEnvironment {
           wordConfidences: [0.5004668, 0.348795831],
           sourceSegmentRange: createRange(1, 3),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 4,
@@ -253,7 +259,7 @@ class TestEnvironment {
           wordConfidences: [0.5004668],
           sourceSegmentRange: createRange(1, 2),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 5,
@@ -263,7 +269,10 @@ class TestEnvironment {
           wordConfidences: [0.00347203249, 0.477621228],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 5,
@@ -273,7 +282,10 @@ class TestEnvironment {
           wordConfidences: [0.346071422, 0.477621228],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 1,
@@ -283,7 +295,7 @@ class TestEnvironment {
           wordConfidences: [0.348795831],
           sourceSegmentRange: createRange(2, 3),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 2,
@@ -293,7 +305,7 @@ class TestEnvironment {
           wordConfidences: [0.348795831],
           sourceSegmentRange: createRange(2, 3),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 7,
@@ -303,7 +315,7 @@ class TestEnvironment {
           wordConfidences: [0.2259867],
           sourceSegmentRange: createRange(5, 6),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 8,
@@ -313,7 +325,10 @@ class TestEnvironment {
           wordConfidences: [0.00347203249, 0.477621228],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 8,
@@ -323,7 +338,10 @@ class TestEnvironment {
           wordConfidences: [0.346071422, 0.477621228],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 9,
@@ -333,7 +351,10 @@ class TestEnvironment {
           wordConfidences: [0.00347203249, 0.477621228],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 9,
@@ -343,7 +364,10 @@ class TestEnvironment {
           wordConfidences: [0.346071422, 0.477621228],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 6,
@@ -353,7 +377,7 @@ class TestEnvironment {
           wordConfidences: [0.2259867],
           sourceSegmentRange: createRange(5, 6),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 10,
@@ -363,7 +387,7 @@ class TestEnvironment {
           wordConfidences: [0.0],
           sourceSegmentRange: createRange(6, 7),
           isUnknown: true,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -373,7 +397,7 @@ class TestEnvironment {
           wordConfidences: [0.005803475, 0.317073762],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 1 }]
+          alignment: [{ i: 0, j: 1 }],
         }),
         createArc({
           prevState: 11,
@@ -383,7 +407,7 @@ class TestEnvironment {
           wordConfidences: [0.038961038],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -393,7 +417,7 @@ class TestEnvironment {
           wordConfidences: [0.317073762, 0.06190489],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -403,7 +427,7 @@ class TestEnvironment {
           wordConfidences: [0.317073762, 0.06702433],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -413,7 +437,7 @@ class TestEnvironment {
           wordConfidences: [0.317073762, 0.115540564],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -423,7 +447,7 @@ class TestEnvironment {
           wordConfidences: [0.08047272],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -433,7 +457,7 @@ class TestEnvironment {
           wordConfidences: [0.09361572],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -443,7 +467,7 @@ class TestEnvironment {
           wordConfidences: [0.1428188],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -453,7 +477,7 @@ class TestEnvironment {
           wordConfidences: [0.317073762, 0.018057242],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 11,
@@ -463,8 +487,8 @@ class TestEnvironment {
           wordConfidences: [0.317073762],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
-        })
+          alignment: [{ i: 0, j: 0 }],
+        }),
       ],
       [12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
       -191.0998
@@ -484,7 +508,11 @@ class TestEnvironment {
           wordConfidences: [0.5, 0.5, 0.5],
           sourceSegmentRange: createRange(0, 3),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 2 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+            { i: 2, j: 2 },
+          ],
         }),
         createArc({
           prevState: 0,
@@ -494,7 +522,11 @@ class TestEnvironment {
           wordConfidences: [0.5, 0.5, 0.4],
           sourceSegmentRange: createRange(0, 3),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }, { i: 2, j: 2 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+            { i: 2, j: 2 },
+          ],
         }),
         createArc({
           prevState: 1,
@@ -504,7 +536,10 @@ class TestEnvironment {
           wordConfidences: [0.5, 0.5],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 1,
@@ -514,7 +549,10 @@ class TestEnvironment {
           wordConfidences: [0.4, 0.5],
           sourceSegmentRange: createRange(3, 5),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }, { i: 1, j: 1 }]
+          alignment: [
+            { i: 0, j: 0 },
+            { i: 1, j: 1 },
+          ],
         }),
         createArc({
           prevState: 2,
@@ -524,7 +562,7 @@ class TestEnvironment {
           wordConfidences: [0.5],
           sourceSegmentRange: createRange(5, 6),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 3,
@@ -534,7 +572,7 @@ class TestEnvironment {
           wordConfidences: [0.0],
           sourceSegmentRange: createRange(6, 7),
           isUnknown: true,
-          alignment: [{ i: 0, j: 0 }]
+          alignment: [{ i: 0, j: 0 }],
         }),
         createArc({
           prevState: 4,
@@ -544,8 +582,8 @@ class TestEnvironment {
           wordConfidences: [0.5],
           sourceSegmentRange: createRange(7, 8),
           isUnknown: false,
-          alignment: [{ i: 0, j: 0 }]
-        })
+          alignment: [{ i: 0, j: 0 }],
+        }),
       ],
       [5]
     );
