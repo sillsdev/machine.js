@@ -12,20 +12,15 @@ on:
     branches: [master]
 
 jobs:
-  test:
-    name: Test on Ubuntu node ${{ matrix.node_version }}
+  build:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node_version: [16.x]
 
     steps:
       - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node_version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node_version }}
+          node-version: 16
       - name: Upgrade npm
         if: matrix.node_version < 16
         run: npm install -g npm@7
@@ -33,14 +28,9 @@ jobs:
       - run: npm run prettier:ci
       - run: npm run build
       - run: npm run test:ci
-  publish:
-    name: npm Publish
-    # If the commit is tagged with a version (e.g. "v2.2.3")
-    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - id: publish
+      - name: Publish to npm
+        id: publish
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && contains(github.ref, '.')
         uses: JS-DevTools/npm-publish@v1
         with:
           token: ${{ secrets.NPM_TOKEN }}
