@@ -38,14 +38,7 @@ function createResult(sourceLen: number, prefixLen: number, target: string, conf
     }
   }
 
-  return new TranslationResult(
-    sourceLen,
-    targetWords,
-    targetConfidences,
-    targetSources,
-    alignment,
-    phrases
-  );
+  return new TranslationResult(sourceLen, targetWords, targetConfidences, targetSources, alignment, phrases);
 }
 
 describe('PhraseTranslationSuggester', () => {

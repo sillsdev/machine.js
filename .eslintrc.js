@@ -19,6 +19,6 @@ module.exports = {
         argsIgnorePattern: '^_',
       },
     ],
-    "@typescript-eslint/no-unsafe-argument": "off"
+    '@typescript-eslint/no-unsafe-argument': 'off',
   },
 };
