@@ -10,7 +10,7 @@ export async function createInteractiveTranslator(
   ecm: ErrorCorrectionModel,
   engine: InteractiveTranslationEngine,
   segment: string[],
-  sentenceStart: boolean = true
+  sentenceStart = true
 ): Promise<InteractiveTranslator> {
   const graph = await engine.getWordGraph(segment);
   return new InteractiveTranslator(ecm, engine, segment, graph, sentenceStart);
@@ -35,7 +35,7 @@ function sequenceEqual(x: string[], y: string[]): boolean {
 export class InteractiveTranslator {
   readonly prefix: string[] = [];
 
-  private _isLastWordComplete: boolean = true;
+  private _isLastWordComplete = true;
   private readonly wordGraphProcessor: ErrorCorrectionWordGraphProcessor;
 
   constructor(

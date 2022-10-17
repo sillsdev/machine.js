@@ -9,7 +9,7 @@ import { INITIAL_STATE, WordGraph } from './word-graph';
 import { WordGraphArc } from './word-graph-arc';
 
 export class ErrorCorrectionWordGraphProcessor {
-  confidenceThreshold: number = 0;
+  confidenceThreshold = 0;
 
   private readonly restScores: number[];
   private readonly stateEcmScoreInfos: EcmScoreInfo[] = [];
@@ -19,7 +19,7 @@ export class ErrorCorrectionWordGraphProcessor {
   private readonly stateBestPrevArcs: number[][] = [];
   private readonly statesInvolvedInArcs: Set<number> = new Set<number>();
   private prevPrefix: string[] = [];
-  private prevIsLastWordComplete: boolean = false;
+  private prevIsLastWordComplete = false;
 
   constructor(
     private readonly ecm: ErrorCorrectionModel,

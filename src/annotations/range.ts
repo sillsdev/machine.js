@@ -4,7 +4,7 @@ export interface Range<TOffset = number> {
   readonly length: number;
 }
 
-class NumberRange implements Range<number> {
+class NumberRange implements Range {
   constructor(public readonly start: number, public readonly end: number) {}
 
   get length(): number {

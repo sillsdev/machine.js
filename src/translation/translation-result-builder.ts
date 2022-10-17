@@ -12,7 +12,7 @@ export class TranslationResultBuilder {
   public readonly sources: TranslationSources[] = [];
   public readonly phrases: PhraseInfo[] = [];
 
-  appendWord(word: string, source: TranslationSources, confidence: number = -1): void {
+  appendWord(word: string, source: TranslationSources, confidence = -1): void {
     this.words.push(word);
     this.confidences.push(confidence);
     this.sources.push(source);
@@ -86,7 +86,7 @@ export class TranslationResultBuilder {
           if (wordOp === EditOperation.Substitute) {
             this.confidences[j] = -1;
             this.sources[j] = TranslationSources.Prefix;
-          } else if (wordOp === EditOperation.Hit) {
+          } else {
             this.sources[j] |= TranslationSources.Prefix;
           }
 

@@ -8,8 +8,8 @@ import { TranslationSuggestion } from './translation-suggestion';
 const ALL_PUNCT_REGEXP = XRegExp('^\\p{P}*$');
 
 export class PhraseTranslationSuggester implements TranslationSuggester {
-  confidenceThreshold: number = 0;
-  breakOnPunctuation: boolean = true;
+  confidenceThreshold = 0;
+  breakOnPunctuation = true;
 
   getSuggestions(
     n: number,

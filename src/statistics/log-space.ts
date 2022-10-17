@@ -1,5 +1,5 @@
-export const LOG_ONE: number = 0;
-export const LOG_ZERO: number = -999999999;
+export const LOG_ONE = 0;
+export const LOG_ZERO = -999999999;
 
 export function logAdd(logx: number, logy: number): number {
   if (logx > logy) {

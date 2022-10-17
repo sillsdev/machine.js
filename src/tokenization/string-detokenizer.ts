@@ -31,11 +31,11 @@ export abstract class StringDetokenizer implements Detokenizer {
     return output;
   }
 
-  protected createContext(): any {
+  protected createContext(): unknown {
     return undefined;
   }
 
-  protected abstract getOperation(ctxt: any, token: string): DetokenizeOperation;
+  protected abstract getOperation(ctxt: unknown, token: string): DetokenizeOperation;
 
   protected getSeparator(_tokens: string[], _ops: DetokenizeOperation[], _index: number): string {
     return ' ';

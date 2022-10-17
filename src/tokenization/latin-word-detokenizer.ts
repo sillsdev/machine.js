@@ -32,21 +32,20 @@ const QUOTATION_MARKS = new Map<string, QuoteType>([
 const MERGE_RIGHT_REGEX: RegExp = XRegExp('^\\p{Sc}|[([{¿¡<]$');
 
 export class LatinWordDetokenizer extends StringDetokenizer {
-  protected createContext(): any {
+  protected createContext(): string[] {
     return [];
   }
 
-  protected getOperation(ctxt: any, token: string): DetokenizeOperation {
-    const quotes = ctxt as string[];
+  protected getOperation(ctxt: string[], token: string): DetokenizeOperation {
     const c = token[0];
     if (MERGE_RIGHT_REGEX.test(c)) {
       return DetokenizeOperation.MergeRight;
     } else if (QUOTATION_MARKS.has(c)) {
-      if (quotes.length === 0 || QUOTATION_MARKS.get(c) !== QUOTATION_MARKS.get(quotes[quotes.length - 1])) {
-        quotes.push(c);
+      if (ctxt.length === 0 || QUOTATION_MARKS.get(c) !== QUOTATION_MARKS.get(ctxt[ctxt.length - 1])) {
+        ctxt.push(c);
         return DetokenizeOperation.MergeRight;
       } else {
-        quotes.pop();
+        ctxt.pop();
         return DetokenizeOperation.MergeLeft;
       }
     } else if (c === '/' || c === '\\') {

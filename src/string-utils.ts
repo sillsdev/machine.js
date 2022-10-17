@@ -98,7 +98,7 @@ export function toTitleCase(str: string): string {
   return str.charAt(0).toUpperCase() + str.substring(1).toLowerCase();
 }
 
-export function toSentenceCase(segment: string[], sentenceStart: boolean = true): string[] {
+export function toSentenceCase(segment: string[], sentenceStart = true): string[] {
   const result: string[] = [];
   for (let token of segment) {
     if (sentenceStart && isLower(token)) {

@@ -3,7 +3,7 @@ import { LatinWordDetokenizer } from './latin-word-detokenizer';
 import { DetokenizeOperation } from './string-detokenizer';
 
 export class ZwspWordDetokenizer extends LatinWordDetokenizer {
-  protected getOperation(ctxt: any, token: string): DetokenizeOperation {
+  protected getOperation(ctxt: string[], token: string): DetokenizeOperation {
     if (isWhitespace(token[0])) {
       return DetokenizeOperation.MergeBoth;
     }

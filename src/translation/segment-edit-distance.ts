@@ -158,7 +158,7 @@ export class SegmentEditDistance extends EditDistance<string[], string> {
     return seq[index];
   }
 
-  protected getHitCost(x: string, y: string, isComplete: boolean): number {
+  protected getHitCost(x: string, y: string, _isComplete: boolean): number {
     return this.hitCost * y.length;
   }
 

@@ -8,13 +8,13 @@ const INNER_WORD_PUNCT_REGEX: RegExp = XRegExp("^[&\\-.:=,?@\xAD\xB7\u2010\u2011
 const URL_REGEX: RegExp = XRegExp('^(?:[\\w-]+://?|www[.])[^\\s()<>]+(?:[\\w\\d]+|(?:[^\\p{P}\\s]|/))', 'i');
 
 export class TokenizeContext {
-  index: number = 0;
-  wordStart: number = -1;
-  innerWordPunct: number = -1;
+  index = 0;
+  wordStart = -1;
+  innerWordPunct = -1;
 }
 
 export class LatinWordTokenizer extends WhitespaceTokenizer {
-  treatApostropheAsSingleQuote: boolean = false;
+  treatApostropheAsSingleQuote = false;
 
   private readonly abbreviations: Set<string>;
 

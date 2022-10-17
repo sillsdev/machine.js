@@ -1,7 +1,7 @@
 import { LOG_ZERO, logMultiply } from '../statistics/log-space';
 import { WordGraphArc } from './word-graph-arc';
 
-export const INITIAL_STATE: number = 0;
+export const INITIAL_STATE = 0;
 
 export class WordGraph {
   readonly finalStates: Set<number>;

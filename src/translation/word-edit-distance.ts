@@ -7,10 +7,10 @@ export interface WordEditDistanceResult {
 }
 
 export class WordEditDistance extends EditDistance<string, string> {
-  hitCost: number = 0;
-  insertionCost: number = 0;
-  deletionCost: number = 0;
-  substitutionCost: number = 0;
+  hitCost = 0;
+  insertionCost = 0;
+  deletionCost = 0;
+  substitutionCost = 0;
 
   compute(x: string, y: string): WordEditDistanceResult {
     const matrixResult = this.computeDistMatrix(x, y, true, false);
@@ -40,23 +40,23 @@ export class WordEditDistance extends EditDistance<string, string> {
     return seq[index];
   }
 
-  protected getHitCost(x: string, y: string, isComplete: boolean): number {
+  protected getHitCost(_x: string, _y: string, _isComplete: boolean): number {
     return this.hitCost;
   }
 
-  protected getSubstitutionCost(x: string, y: string, isComplete: boolean): number {
+  protected getSubstitutionCost(_x: string, _y: string, _isComplete: boolean): number {
     return this.substitutionCost;
   }
 
-  protected getDeletionCost(x: string): number {
+  protected getDeletionCost(_x: string): number {
     return this.deletionCost;
   }
 
-  protected getInsertionCost(y: string): number {
+  protected getInsertionCost(_y: string): number {
     return this.insertionCost;
   }
 
-  protected isHit(x: string, y: string, isComplete: boolean): boolean {
+  protected isHit(x: string, y: string, _isComplete: boolean): boolean {
     return x === y;
   }
 }
