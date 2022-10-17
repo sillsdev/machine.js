@@ -119,10 +119,10 @@ export class TranslationResultBuilder {
     return alignmentColsToCopy.length;
   }
 
-  toResult(sourceSegment: string[]): TranslationResult {
+  toResult(sourceSegmentLength: number): TranslationResult {
     const confidences = this.confidences.slice();
     const sources = new Array<TranslationSources>(this.words.length);
-    const alignment = new WordAlignmentMatrix(sourceSegment.length, this.words.length);
+    const alignment = new WordAlignmentMatrix(sourceSegmentLength, this.words.length);
     const phrases: Phrase[] = [];
     let trgPhraseStartIndex = 0;
     for (const phraseInfo of this.phrases) {
@@ -143,7 +143,7 @@ export class TranslationResultBuilder {
       trgPhraseStartIndex = phraseInfo.targetCut;
     }
 
-    return new TranslationResult(sourceSegment, this.words, confidences, sources, alignment, phrases);
+    return new TranslationResult(sourceSegmentLength, this.words, confidences, sources, alignment, phrases);
   }
 
   private resizeAlignment(phraseIndex: number, colsToCopy: number[]): void {

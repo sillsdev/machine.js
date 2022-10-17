@@ -39,7 +39,7 @@ function createResult(sourceLen: number, prefixLen: number, target: string, conf
   }
 
   return new TranslationResult(
-    Array<number>(sourceLen).map((index) => index.toString()),
+    sourceLen,
     targetWords,
     targetConfidences,
     targetSources,

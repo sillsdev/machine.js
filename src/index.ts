@@ -20,19 +20,14 @@ export { WordAlignmentMatrix } from './translation/word-alignment-matrix';
 export { TranslationResult } from './translation/translation-result';
 export { TranslationResultBuilder } from './translation/translation-result-builder';
 export { TranslationEngine } from './translation/translation-engine';
-export { TranslationEngineStats } from './translation/translation-engine-stats';
 export { InteractiveTranslationEngine } from './translation/interactive-translation-engine';
 export { createInteractiveTranslator, InteractiveTranslator } from './translation/interactive-translator';
 export { ProgressStatus } from './translation/progress-status';
-export { RemoteTranslationEngine } from './translation/remote-translation-engine';
 export { TranslationSuggestion } from './translation/translation-suggestion';
 export { TranslationSuggester } from './translation/translation-suggester';
 export { PhraseTranslationSuggester } from './translation/phrase-translation-suggester';
 export { ErrorCorrectionModel } from './translation/error-correction-model';
 export { INITIAL_STATE, WordGraph } from './translation/word-graph';
 export { WordGraphArc } from './translation/word-graph-arc';
-
-export { HttpClient, HttpResponse } from './web-api/http-client';
-export { RxjsHttpClient } from './web-api/rxjs-http-client';
 
 export { hasSentenceEnding, toSentenceCase } from './string-utils';

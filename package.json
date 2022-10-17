@@ -44,7 +44,6 @@
   "dependencies": {
     "gensequence": "^3.1.1",
     "mnemonist": "^0.38.3",
-    "rxjs": "^6.6.2",
     "xregexp": "^5.1.0"
   },
   "files": [

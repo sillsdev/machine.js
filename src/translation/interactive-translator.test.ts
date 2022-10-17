@@ -3,8 +3,8 @@ import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
 import { createRange, Range } from '../annotations/range';
 import { MAX_SEGMENT_LENGTH } from './constants';
 import { ErrorCorrectionModel } from './error-correction-model';
+import { InteractiveTranslationEngine } from './interactive-translation-engine';
 import { createInteractiveTranslator, InteractiveTranslator } from './interactive-translator';
-import { RemoteTranslationEngine } from './remote-translation-engine';
 import { TranslationSources } from './translation-sources';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
 import { WordGraph } from './word-graph';
@@ -171,7 +171,7 @@ function createAlignment(rowCount: number, columnCount: number, pairs: AlignedWo
 }
 
 class TestEnvironment {
-  readonly mockedEngine = mock(RemoteTranslationEngine);
+  readonly mockedEngine = mock<InteractiveTranslationEngine>();
   readonly ecm: ErrorCorrectionModel = new ErrorCorrectionModel();
 
   constructor() {

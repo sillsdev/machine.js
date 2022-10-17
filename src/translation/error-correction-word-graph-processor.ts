@@ -90,7 +90,7 @@ export class ErrorCorrectionWordGraphProcessor {
     for (const hypothesis of this.search(heap)) {
       const builder = new TranslationResultBuilder();
       this.buildCorrectionFromHypothesis(builder, this.prevPrefix, this.prevIsLastWordComplete, hypothesis);
-      yield builder.toResult(this.sourceSegment);
+      yield builder.toResult(this.sourceSegment.length);
     }
   }
 

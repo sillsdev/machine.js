@@ -10,7 +10,7 @@ Machine provides a set of word and segment tokenizers.
 
 ### Translation
 
-Machine provides a machine translation client for the Machine Web API server. The translation engine is located on the server. The client APIs are used to initiate translation processes on the server. For interactive translation, the remote translation engine returns all possible translations for a source segment in a word graph. The client can efficiently search the graph for best translation suffix based on a provided prefix.
+Machine provides interfaces and classes for supporting interactive machine translation in a browser. The calling application must provide an implementation of the interactive translation engine. The translation engine returns all possible translations for a source segment in a word graph. The application can efficiently search the graph for best translation suffix based on a provided prefix using the interactive translator class.
 
 ## Installation
 

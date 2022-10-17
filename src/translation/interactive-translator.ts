@@ -109,7 +109,7 @@ export class InteractiveTranslator {
       if (bestResult == null) {
         return;
       }
-      sourceSegment = bestResult.getAlignedSourceSegment(this.prefix.length);
+      sourceSegment = this.getAlignedSourceSegment(bestResult);
     }
 
     if (sourceSegment.length > 0) {
@@ -123,5 +123,20 @@ export class InteractiveTranslator {
 
   private correct(): void {
     this.wordGraphProcessor.correct(this.prefix, this.isLastWordComplete);
+  }
+
+  private getAlignedSourceSegment(result: TranslationResult): string[] {
+    let sourceLength = 0;
+    for (const phrase of result.phrases) {
+      if (phrase.targetSegmentCut > this.prefix.length) {
+        break;
+      }
+
+      if (phrase.sourceSegmentRange.end > sourceLength) {
+        sourceLength = phrase.sourceSegmentRange.end;
+      }
+    }
+
+    return sourceLength === this.sourceSegment.length ? this.sourceSegment : this.sourceSegment.slice(0, sourceLength);
   }
 }
