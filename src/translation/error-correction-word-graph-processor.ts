@@ -7,6 +7,7 @@ import { TranslationResultBuilder } from './translation-result-builder';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
 import { INITIAL_STATE, WordGraph } from './word-graph';
 import { WordGraphArc } from './word-graph-arc';
+import { Detokenizer } from '../tokenization/detokenizer';
 
 export class ErrorCorrectionWordGraphProcessor {
   confidenceThreshold = 0;
@@ -23,7 +24,7 @@ export class ErrorCorrectionWordGraphProcessor {
 
   constructor(
     private readonly ecm: ErrorCorrectionModel,
-    private readonly sourceSegment: string[],
+    private readonly targetDetokenizer: Detokenizer,
     private readonly wordGraph: WordGraph,
     public readonly ecmWeight = 1,
     public readonly wordGraphWeight = 1
@@ -88,9 +89,9 @@ export class ErrorCorrectionWordGraphProcessor {
   *getResults(): IterableIterator<TranslationResult> {
     const heap = this.getHypotheses();
     for (const hypothesis of this.search(heap)) {
-      const builder = new TranslationResultBuilder();
+      const builder = new TranslationResultBuilder(this.wordGraph.sourceTokens, this.targetDetokenizer);
       this.buildCorrectionFromHypothesis(builder, this.prevPrefix, this.prevIsLastWordComplete, hypothesis);
-      yield builder.toResult(this.sourceSegment.length);
+      yield builder.toResult();
     }
   }
 
@@ -115,7 +116,7 @@ export class ErrorCorrectionWordGraphProcessor {
       // init ecm score info for each word of arc
       let prevEsi = this.stateEcmScoreInfos[arc.prevState];
       const esis: EcmScoreInfo[] = [];
-      for (const word of arc.words) {
+      for (const word of arc.targetTokens) {
         const esi = new EcmScoreInfo();
         this.ecm.setupEsi(esi, prevEsi, word);
         esis.push(esi);
@@ -207,12 +208,12 @@ export class ErrorCorrectionWordGraphProcessor {
       // update ecm score info for each word of arc
       let prevEsi = this.stateEcmScoreInfos[arc.prevState];
       const esis = this.arcEcmScoreInfos[arcIndex];
-      while (esis.length < arc.words.length) {
+      while (esis.length < arc.targetTokens.length) {
         esis.push(new EcmScoreInfo());
       }
-      for (let i = 0; i < arc.words.length; i++) {
+      for (let i = 0; i < arc.targetTokens.length; i++) {
         const esi = esis[i];
-        this.ecm.extendEsi(esi, prevEsi, arc.isUnknown ? '' : arc.words[i], prefixDiff, isLastWordComplete);
+        this.ecm.extendEsi(esi, prevEsi, arc.isUnknown ? '' : arc.targetTokens[i], prefixDiff, isLastWordComplete);
         prevEsi = esi;
       }
 
@@ -237,7 +238,7 @@ export class ErrorCorrectionWordGraphProcessor {
       const arc = this.wordGraph.arcs[arcIndex];
       if (!this.isArcPruned(arc)) {
         const wordGraphScore = this.stateWordGraphScores[arc.prevState] + arc.score;
-        for (let i = -1; i < arc.words.length - 1; i++) {
+        for (let i = -1; i < arc.targetTokens.length - 1; i++) {
           const esi = i === -1 ? this.stateEcmScoreInfos[arc.prevState] : this.arcEcmScoreInfos[arcIndex][i];
           const score =
             this.wordGraphWeight * wordGraphScore +
@@ -261,7 +262,7 @@ export class ErrorCorrectionWordGraphProcessor {
   }
 
   private isArcPruned(arc: WordGraphArc): boolean {
-    return !arc.isUnknown && arc.wordConfidences.some((c) => c < this.confidenceThreshold);
+    return !arc.isUnknown && arc.confidences.some((c) => c < this.confidenceThreshold);
   }
 
   private *search(heap: MaxHeap<Hypothesis>): IterableIterator<Hypothesis> {
@@ -318,7 +319,7 @@ export class ErrorCorrectionWordGraphProcessor {
     let uncorrectedPrefixLen: number;
     if (hypothesis.startArcIndex === -1) {
       this.addBestUncorrectedPrefixState(builder, prefix.length, hypothesis.startState);
-      uncorrectedPrefixLen = builder.words.length;
+      uncorrectedPrefixLen = builder.targetTokens.length;
     } else {
       this.addBestUncorrectedPrefixSubState(
         builder,
@@ -327,7 +328,8 @@ export class ErrorCorrectionWordGraphProcessor {
         hypothesis.startArcWordIndex
       );
       const firstArc = this.wordGraph.arcs[hypothesis.startArcIndex];
-      uncorrectedPrefixLen = builder.words.length - (firstArc.words.length - hypothesis.startArcWordIndex) + 1;
+      uncorrectedPrefixLen =
+        builder.targetTokens.length - (firstArc.targetTokens.length - hypothesis.startArcWordIndex) + 1;
     }
 
     let alignmentColsToAddCount = this.ecm.correctPrefix(builder, uncorrectedPrefixLen, prefix, isLastWordComplete);
@@ -347,7 +349,7 @@ export class ErrorCorrectionWordGraphProcessor {
       const arcIndex = this.stateBestPrevArcs[curState][curProcPrefixPos];
       const arc = this.wordGraph.arcs[arcIndex];
 
-      for (let i = arc.words.length - 1; i >= 0; i--) {
+      for (let i = arc.targetTokens.length - 1; i >= 0; i--) {
         const predPrefixWords = this.arcEcmScoreInfos[arcIndex][i].getLastInsPrefixWordFromEsi();
         curProcPrefixPos = predPrefixWords[curProcPrefixPos];
       }
@@ -386,8 +388,8 @@ export class ErrorCorrectionWordGraphProcessor {
     arc: WordGraphArc,
     alignmentColsToAddCount: number
   ): void {
-    for (let i = 0; i < arc.words.length; i++) {
-      builder.appendWord(arc.words[i], arc.wordSources[i], arc.wordConfidences[i]);
+    for (let i = 0; i < arc.targetTokens.length; i++) {
+      builder.appendToken(arc.targetTokens[i], arc.sources[i], arc.confidences[i]);
     }
 
     let alignment = arc.alignment;

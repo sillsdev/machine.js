@@ -5,115 +5,90 @@ import { ErrorCorrectionWordGraphProcessor } from './error-correction-word-graph
 import { InteractiveTranslationEngine } from './interactive-translation-engine';
 import { TranslationResult } from './translation-result';
 import { WordGraph } from './word-graph';
-
-export async function createInteractiveTranslator(
-  ecm: ErrorCorrectionModel,
-  engine: InteractiveTranslationEngine,
-  segment: string[],
-  sentenceStart = true
-): Promise<InteractiveTranslator> {
-  const graph = await engine.getWordGraph(segment);
-  return new InteractiveTranslator(ecm, engine, segment, graph, sentenceStart);
-}
-
-function sequenceEqual(x: string[], y: string[]): boolean {
-  if (x === y) {
-    return true;
-  }
-  if (x.length !== y.length) {
-    return false;
-  }
-
-  for (let i = 0; i < x.length; i++) {
-    if (x[i] !== y[i]) {
-      return false;
-    }
-  }
-  return true;
-}
+import { RangeTokenizer } from '../tokenization/range-tokenizer';
+import { Detokenizer } from '../tokenization/detokenizer';
+import { Range } from '../annotations/range';
+import { getRanges, split } from '../tokenization/tokenizer-utils';
 
 export class InteractiveTranslator {
-  readonly prefix: string[] = [];
-
+  private _prefix = '';
   private _isLastWordComplete = true;
+  private _prefixWordRanges: readonly Range[] = [];
   private readonly wordGraphProcessor: ErrorCorrectionWordGraphProcessor;
+  private readonly _segmentWordRanges: readonly Range[];
 
   constructor(
     ecm: ErrorCorrectionModel,
     private readonly engine: InteractiveTranslationEngine,
-    public readonly sourceSegment: string[],
+    private readonly targetTokenizer: RangeTokenizer,
+    targetDetokenizer: Detokenizer,
+    public readonly segment: string,
     private readonly wordGraph: WordGraph,
     private readonly sentenceStart: boolean
   ) {
-    this.wordGraphProcessor = new ErrorCorrectionWordGraphProcessor(ecm, this.sourceSegment, this.wordGraph);
+    this.wordGraphProcessor = new ErrorCorrectionWordGraphProcessor(ecm, targetDetokenizer, this.wordGraph);
+    this._segmentWordRanges = Array.from(getRanges(this.segment, wordGraph.sourceTokens));
     this.correct();
+  }
+
+  get segmentWordRanges(): readonly Range[] {
+    return this._segmentWordRanges;
+  }
+
+  get prefix(): string {
+    return this._prefix;
+  }
+
+  get prefixWordRanges(): readonly Range[] {
+    return this._prefixWordRanges;
   }
 
   get isLastWordComplete(): boolean {
     return this._isLastWordComplete;
   }
 
-  get isSourceSegmentValid(): boolean {
-    return this.sourceSegment.length <= MAX_SEGMENT_LENGTH;
+  get isSegmentValid(): boolean {
+    return this.segment.length <= MAX_SEGMENT_LENGTH;
   }
 
-  setPrefix(prefix: string[], isLastWordComplete: boolean): void {
-    if (!sequenceEqual(this.prefix, prefix) || this._isLastWordComplete !== isLastWordComplete) {
-      this.prefix.length = 0;
-      this.prefix.push(...prefix);
-      this._isLastWordComplete = isLastWordComplete;
+  setPrefix(prefix: string): void {
+    if (this._prefix !== prefix) {
+      this._prefix = prefix;
       this.correct();
     }
   }
 
-  appendToPrefix(addition: string, isLastWordComplete: boolean): void {
-    if (addition === '' && this._isLastWordComplete) {
-      throw new Error('An empty string cannot be added to a prefix where the last word is complete.');
-    }
-
-    if (addition !== '' || this._isLastWordComplete !== isLastWordComplete) {
-      if (this.isLastWordComplete) {
-        this.prefix.push(addition);
-      } else {
-        this.prefix[this.prefix.length - 1] = this.prefix[this.prefix.length - 1] + addition;
-      }
-      this._isLastWordComplete = isLastWordComplete;
-      this.correct();
-    }
-  }
-
-  appendWordsToPrefix(words: string[]): void {
-    let updated = false;
-    for (const word of words) {
-      if (this._isLastWordComplete) {
-        this.prefix.push(word);
-      } else {
-        this.prefix[this.prefix.length - 1] = word;
-      }
-      this._isLastWordComplete = true;
-      updated = true;
-    }
-    if (updated) {
+  appendToPrefix(addition: string): void {
+    if (addition !== '') {
+      this._prefix += addition;
       this.correct();
     }
   }
 
   async approve(alignedOnly: boolean): Promise<void> {
-    if (!this.isSourceSegmentValid || this.prefix.length > MAX_SEGMENT_LENGTH) {
+    if (!this.isSegmentValid || this.prefixWordRanges.length > MAX_SEGMENT_LENGTH) {
       return;
     }
 
-    let sourceSegment = this.sourceSegment;
+    let segmentWordRanges = this.segmentWordRanges;
     if (alignedOnly) {
       const bestResult = genSequence(this.getCurrentResults()).first();
       if (bestResult == null) {
         return;
       }
-      sourceSegment = this.getAlignedSourceSegment(bestResult);
+      segmentWordRanges = this.getAlignedSourceSegment(bestResult);
     }
 
-    if (sourceSegment.length > 0) {
-      await this.engine.trainSegment(sourceSegment, this.prefix, this.sentenceStart);
+    if (segmentWordRanges.length > 0) {
+      const sourceSegment = this.segment.substring(
+        segmentWordRanges[0].start,
+        segmentWordRanges[segmentWordRanges.length - 1].end
+      );
+      const targetSegment = this._prefix.substring(
+        this.prefixWordRanges[0].start,
+        this.prefixWordRanges[this.prefixWordRanges.length - 1].end
+      );
+      await this.engine.trainSegment(sourceSegment, targetSegment, this.sentenceStart);
     }
   }
 
@@ -122,13 +97,17 @@ export class InteractiveTranslator {
   }
 
   private correct(): void {
-    this.wordGraphProcessor.correct(this.prefix, this.isLastWordComplete);
+    this._prefixWordRanges = Array.from(this.targetTokenizer.tokenizeAsRanges(this.prefix));
+    this._isLastWordComplete =
+      this.prefixWordRanges.length === 0 ||
+      this.prefixWordRanges[this.prefixWordRanges.length - 1].end < this.prefix.length;
+    this.wordGraphProcessor.correct(split(this.prefix, this.prefixWordRanges), this.isLastWordComplete);
   }
 
-  private getAlignedSourceSegment(result: TranslationResult): string[] {
+  private getAlignedSourceSegment(result: TranslationResult): readonly Range[] {
     let sourceLength = 0;
     for (const phrase of result.phrases) {
-      if (phrase.targetSegmentCut > this.prefix.length) {
+      if (phrase.targetSegmentCut > this.prefixWordRanges.length) {
         break;
       }
 
@@ -137,6 +116,8 @@ export class InteractiveTranslator {
       }
     }
 
-    return sourceLength === this.sourceSegment.length ? this.sourceSegment : this.sourceSegment.slice(0, sourceLength);
+    return sourceLength === this.segmentWordRanges.length
+      ? this.segmentWordRanges
+      : this.segmentWordRanges.slice(0, sourceLength);
   }
 }

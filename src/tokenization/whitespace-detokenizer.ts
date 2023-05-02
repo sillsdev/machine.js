@@ -5,3 +5,5 @@ export class WhitespaceDetokenizer extends StringDetokenizer {
     return DetokenizeOperation.NoOperation;
   }
 }
+
+export const WHITESPACE_DETOKENIZER = new WhitespaceDetokenizer();

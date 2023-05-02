@@ -3,15 +3,14 @@ import { isDelayedSentenceEnd, isLower, isSentenceTerminal } from '../string-uti
 import { LatinWordTokenizer } from './latin-word-tokenizer';
 import { LineSegmentTokenizer } from './line-segment-tokenizer';
 
-const LINE_TOKENIZER: LineSegmentTokenizer = new LineSegmentTokenizer();
+const LINE_TOKENIZER = new LineSegmentTokenizer();
 
 export class LatinSentenceTokenizer extends LatinWordTokenizer {
   constructor(abbreviations: string[] = []) {
     super(abbreviations);
   }
 
-  tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {
-    const tokens: Range[] = [];
+  *tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Iterable<Range> {
     for (const lineRange of LINE_TOKENIZER.tokenizeAsRanges(data, range)) {
       let sentenceStart = -1;
       let sentenceEnd = -1;
@@ -33,7 +32,7 @@ export class LatinSentenceTokenizer extends LatinWordTokenizer {
             inEnd = false;
             hasEndQuotesBracket = false;
           } else {
-            tokens.push(createRange(sentenceStart, sentenceEnd));
+            yield createRange(sentenceStart, sentenceEnd);
             sentenceStart = wordRange.start;
             inEnd = false;
             hasEndQuotesBracket = false;
@@ -43,10 +42,8 @@ export class LatinSentenceTokenizer extends LatinWordTokenizer {
       }
 
       if (sentenceStart !== -1 && sentenceEnd !== -1) {
-        tokens.push(createRange(sentenceStart, inEnd ? sentenceEnd : lineRange.end));
+        yield createRange(sentenceStart, inEnd ? sentenceEnd : lineRange.end);
       }
     }
-
-    return tokens;
   }
 }

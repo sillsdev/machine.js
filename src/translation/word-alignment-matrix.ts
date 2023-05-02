@@ -1,8 +1,15 @@
 export class WordAlignmentMatrix {
   private matrix: boolean[][] = [];
 
-  constructor(public readonly rowCount: number, public readonly columnCount: number) {
+  constructor(
+    public readonly rowCount: number,
+    public readonly columnCount: number,
+    setValues: Iterable<[number, number]> = []
+  ) {
     this.setAll(false);
+    for (const [i, j] of setValues) {
+      this.set(i, j, true);
+    }
   }
 
   setAll(value: boolean): void {

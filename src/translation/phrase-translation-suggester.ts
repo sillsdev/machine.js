@@ -8,8 +8,7 @@ import { TranslationSuggestion } from './translation-suggestion';
 const ALL_PUNCT_REGEXP = XRegExp('^\\p{P}*$');
 
 export class PhraseTranslationSuggester implements TranslationSuggester {
-  confidenceThreshold = 0;
-  breakOnPunctuation = true;
+  constructor(public confidenceThreshold = 0, public breakOnPunctuation = true) {}
 
   getSuggestions(
     n: number,
@@ -25,7 +24,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         // if the prefix ends with a partial word and it has been completed,
         // then make sure it is included as a suggestion,
         // otherwise, don't return any suggestions
-        if ((result.wordSources[startingJ - 1] & TranslationSources.Smt) !== 0) {
+        if ((result.sources[startingJ - 1] & TranslationSources.Smt) !== 0) {
           startingJ--;
         } else {
           break;
@@ -37,35 +36,39 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         k++;
       }
 
-      let minConfidence = -1;
+      let suggestionConfidence = -1;
       const indices: number[] = [];
-      let numWords = 0;
-      let hitPunctuation = false;
+      let endingJ = startingJ;
       for (; k < result.phrases.length; k++) {
         const phrase = result.phrases[k];
-        let isUnknown = false;
-        if (phrase.confidence >= this.confidenceThreshold) {
-          for (let j = startingJ; j < phrase.targetSegmentCut; j++) {
-            if (result.wordSources[j] === TranslationSources.None) {
-              // hit an unknown word, so don't include any more words in this suggestion
-              isUnknown = true;
-              break;
-            }
-            const word = result.targetSegment[j];
-            if (ALL_PUNCT_REGEXP.test(word)) {
-              hitPunctuation = true;
-            }
-            if (!this.breakOnPunctuation || !hitPunctuation) {
-              indices.push(j);
-              const wordConfidence = result.wordConfidences[j];
-              if (minConfidence < 0 || wordConfidence < minConfidence) {
-                minConfidence = wordConfidence;
-              }
-            }
-            numWords++;
-          }
-          if (isUnknown) {
+        let phraseConfidence = 1;
+        for (let j = startingJ; j < phrase.targetSegmentCut; j++) {
+          if (result.sources[j] === TranslationSources.None) {
+            // hit an unknown word, so don't include any more words in this suggestion
+            phraseConfidence = 0;
             break;
+          }
+          const word = result.targetTokens[j];
+          if (this.breakOnPunctuation && ALL_PUNCT_REGEXP.test(word)) {
+            break;
+          }
+
+          phraseConfidence = Math.min(phraseConfidence, result.confidences[j]);
+          if (phraseConfidence < this.confidenceThreshold) {
+            break;
+          }
+
+          endingJ = j + 1;
+        }
+
+        if (phraseConfidence >= this.confidenceThreshold) {
+          suggestionConfidence =
+            suggestionConfidence == -1 ? phraseConfidence : Math.min(suggestionConfidence, phraseConfidence);
+
+          if (startingJ === endingJ) break;
+
+          for (let j = startingJ; j < endingJ; j++) {
+            indices.push(j);
           }
 
           startingJ = phrase.targetSegmentCut;
@@ -74,18 +77,19 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
           break;
         }
       }
-
-      if (indices.length === 0) {
-        if (numWords > 0) {
-          // this is a good suggestion, it just starts with a punctuation, so keep looking for more suggestions
-          continue;
-        } else {
-          // the suggestion is empty, so probably all suggestions after this one are bad
-          break;
-        }
+      if (suggestionConfidence === -1) {
+        // the suggestion started with a low confidence phrase, so probably all suggestions after this one are bad
+        break;
+      } else if (indices.length === 0) {
+        // this suggestion starts with a punctuation, so keep looking for more suggestions
+        continue;
       }
 
-      const newSuggestion = new TranslationSuggestion(result, indices, minConfidence < 0 ? 0 : minConfidence);
+      const newSuggestion = new TranslationSuggestion(
+        result,
+        indices,
+        suggestionConfidence < 0 ? 0 : suggestionConfidence
+      );
       // make sure this suggestion isn't a duplicate of a better suggestion
       const newSuggestionStr = newSuggestion.targetWords.join('\u0001');
       let isDuplicate = false;

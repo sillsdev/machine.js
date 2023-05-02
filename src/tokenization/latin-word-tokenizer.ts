@@ -23,13 +23,12 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
     this.abbreviations = new Set<string>(abbreviations.map((a) => a.toLowerCase()));
   }
 
-  tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Range[] {
-    const tokens: Range[] = [];
+  *tokenizeAsRanges(data: string, range: Range = createRange(0, data.length)): Iterable<Range> {
     const ctxt = new TokenizeContext();
     for (const charRange of super.tokenizeAsRanges(data, range)) {
       const urlMatch = URL_REGEX.exec(data.substring(charRange.start, charRange.end));
       if (urlMatch != null) {
-        tokens.push(createRange(charRange.start, charRange.start + urlMatch[0].length));
+        yield createRange(charRange.start, charRange.start + urlMatch[0].length);
         ctxt.index = charRange.start + urlMatch[0].length;
       } else {
         ctxt.index = charRange.start;
@@ -39,10 +38,10 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
       while (ctxt.index < charRange.end) {
         const [tokenRange1, tokenRange2] = this.processCharacter(data, range, ctxt);
         if (tokenRange1 != null) {
-          tokens.push(tokenRange1);
+          yield tokenRange1;
         }
         if (tokenRange2 != null) {
-          tokens.push(tokenRange2);
+          yield tokenRange2;
         }
       }
 
@@ -53,18 +52,16 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
             (innerPunctStr === '.' && this.isAbbreviation(data, ctxt.wordStart, ctxt.innerWordPunct)) ||
             (innerPunctStr === "'" && !this.treatApostropheAsSingleQuote)
           ) {
-            tokens.push(createRange(ctxt.wordStart, charRange.end));
+            yield createRange(ctxt.wordStart, charRange.end);
           } else {
-            tokens.push(createRange(ctxt.wordStart, ctxt.innerWordPunct));
-            tokens.push(createRange(ctxt.innerWordPunct, charRange.end));
+            yield createRange(ctxt.wordStart, ctxt.innerWordPunct);
+            yield createRange(ctxt.innerWordPunct, charRange.end);
           }
         } else {
-          tokens.push(createRange(ctxt.wordStart, charRange.end));
+          yield createRange(ctxt.wordStart, charRange.end);
         }
       }
     }
-
-    return tokens;
   }
 
   protected processCharacter(

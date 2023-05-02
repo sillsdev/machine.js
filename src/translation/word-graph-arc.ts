@@ -8,14 +8,14 @@ export class WordGraphArc {
     public readonly prevState: number,
     public readonly nextState: number,
     public readonly score: number,
-    public readonly words: string[],
+    public readonly targetTokens: string[],
     public readonly alignment: WordAlignmentMatrix,
     public readonly sourceSegmentRange: Range,
-    public readonly wordSources: TranslationSources[],
-    public readonly wordConfidences: number[] = new Array<number>(words.length).fill(-1)
+    public readonly sources: TranslationSources[],
+    public readonly confidences: number[]
   ) {}
 
   get isUnknown(): boolean {
-    return genSequence(this.wordSources).all((s) => s === TranslationSources.None);
+    return genSequence(this.sources).all((s) => s === TranslationSources.None);
   }
 }

@@ -10,6 +10,7 @@ export class WordGraph {
   private readonly states: Map<number, StateInfo> = new Map<number, StateInfo>();
 
   constructor(
+    public readonly sourceTokens: string[],
     public readonly arcs: WordGraphArc[] = [],
     finalStates: number[] = [],
     public readonly initialStateScore: number = 0

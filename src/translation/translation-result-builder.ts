@@ -5,25 +5,44 @@ import { PhraseInfo } from './phrase-info';
 import { TranslationResult } from './translation-result';
 import { TranslationSources } from './translation-sources';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
+import { Detokenizer } from '../tokenization/detokenizer';
+import { WHITESPACE_DETOKENIZER } from '../tokenization/whitespace-detokenizer';
 
 export class TranslationResultBuilder {
-  public readonly words: string[] = [];
-  public readonly confidences: number[] = [];
-  public readonly sources: TranslationSources[] = [];
-  public readonly phrases: PhraseInfo[] = [];
+  private readonly _targetTokens: string[] = [];
+  private readonly _confidences: number[] = [];
+  private readonly _sources: TranslationSources[] = [];
+  private readonly _phrases: PhraseInfo[] = [];
 
-  appendWord(word: string, source: TranslationSources, confidence = -1): void {
-    this.words.push(word);
-    this.confidences.push(confidence);
-    this.sources.push(source);
+  constructor(
+    public readonly sourceTokens: readonly string[],
+    public targetDetokenizer: Detokenizer = WHITESPACE_DETOKENIZER
+  ) {}
+
+  get targetTokens(): readonly string[] {
+    return this._targetTokens;
+  }
+
+  get confidences(): readonly number[] {
+    return this._confidences;
+  }
+
+  get sources(): readonly TranslationSources[] {
+    return this._sources;
+  }
+
+  get phrases(): readonly PhraseInfo[] {
+    return this._phrases;
+  }
+
+  appendToken(token: string, source: TranslationSources, confidence: number): void {
+    this._targetTokens.push(token);
+    this._sources.push(source);
+    this._confidences.push(confidence);
   }
 
   markPhrase(sourceSegmentRange: Range, alignment: WordAlignmentMatrix): void {
-    this.phrases.push(new PhraseInfo(sourceSegmentRange, this.words.length, alignment));
-  }
-
-  setConfidence(index: number, confidence: number): void {
-    this.confidences[index] = confidence;
+    this._phrases.push(new PhraseInfo(sourceSegmentRange, this.targetTokens.length, alignment));
   }
 
   correctPrefix(
@@ -39,9 +58,9 @@ export class TranslationResultBuilder {
     for (const wordOp of wordOps) {
       switch (wordOp) {
         case EditOperation.Insert:
-          this.words.splice(j, 0, prefix[j]);
-          this.sources.splice(j, 0, TranslationSources.Prefix);
-          this.confidences.splice(j, 0, -1);
+          this._targetTokens.splice(j, 0, prefix[j]);
+          this._sources.splice(j, 0, TranslationSources.Prefix);
+          this._confidences.splice(j, 0, -1);
           alignmentColsToCopy.push(-1);
           for (let l = k; l < this.phrases.length; l++) {
             this.phrases[l].targetCut++;
@@ -50,9 +69,9 @@ export class TranslationResultBuilder {
           break;
 
         case EditOperation.Delete:
-          this.words.splice(j, 1);
-          this.sources.splice(j, 1);
-          this.confidences.splice(j, 1);
+          this._targetTokens.splice(j, 1);
+          this._sources.splice(j, 1);
+          this._confidences.splice(j, 1);
           i++;
           if (k < this.phrases.length) {
             for (let l = k; l < this.phrases.length; l++) {
@@ -63,7 +82,7 @@ export class TranslationResultBuilder {
               this.phrases[k].targetCut <= 0 ||
               (k > 0 && this.phrases[k].targetCut === this.phrases[k - 1].targetCut)
             ) {
-              this.phrases.splice(k, 1);
+              this._phrases.splice(k, 1);
               alignmentColsToCopy = [];
               i = 0;
             } else if (j >= this.phrases[k].targetCut) {
@@ -78,16 +97,16 @@ export class TranslationResultBuilder {
         case EditOperation.Hit:
         case EditOperation.Substitute:
           if (wordOp === EditOperation.Substitute || j < prefix.length - 1 || isLastWordComplete) {
-            this.words[j] = prefix[j];
+            this._targetTokens[j] = prefix[j];
           } else {
-            this.words[j] = this.correctWord(charOps, this.words[j], prefix[j]);
+            this._targetTokens[j] = this.correctWord(charOps, this.targetTokens[j], prefix[j]);
           }
 
           if (wordOp === EditOperation.Substitute) {
-            this.confidences[j] = -1;
-            this.sources[j] = TranslationSources.Prefix;
+            this._confidences[j] = -1;
+            this._sources[j] = TranslationSources.Prefix;
           } else {
-            this.sources[j] |= TranslationSources.Prefix;
+            this._sources[j] |= TranslationSources.Prefix;
           }
 
           alignmentColsToCopy.push(i);
@@ -104,7 +123,7 @@ export class TranslationResultBuilder {
       }
     }
 
-    while (j < this.words.length) {
+    while (j < this.targetTokens.length) {
       alignmentColsToCopy.push(i);
 
       i++;
@@ -119,14 +138,20 @@ export class TranslationResultBuilder {
     return alignmentColsToCopy.length;
   }
 
-  toResult(sourceSegmentLength: number): TranslationResult {
+  reset(): void {
+    this._targetTokens.length = 0;
+    this._confidences.length = 0;
+    this._sources.length = 0;
+    this._phrases.length = 0;
+  }
+
+  toResult(translation?: string): TranslationResult {
     const confidences = this.confidences.slice();
-    const sources = new Array<TranslationSources>(this.words.length);
-    const alignment = new WordAlignmentMatrix(sourceSegmentLength, this.words.length);
+    const sources = new Array<TranslationSources>(this.targetTokens.length);
+    const alignment = new WordAlignmentMatrix(this.sourceTokens.length, this.targetTokens.length);
     const phrases: Phrase[] = [];
     let trgPhraseStartIndex = 0;
     for (const phraseInfo of this.phrases) {
-      let confidence = Number.MAX_VALUE;
       for (let j = trgPhraseStartIndex; j < phraseInfo.targetCut; j++) {
         for (let i = phraseInfo.sourceSegmentRange.start; i < phraseInfo.sourceSegmentRange.end; i++) {
           const aligned = phraseInfo.alignment.get(i - phraseInfo.sourceSegmentRange.start, j - trgPhraseStartIndex);
@@ -136,14 +161,21 @@ export class TranslationResultBuilder {
         }
 
         sources[j] = this.sources[j];
-        confidence = Math.min(confidence, this.confidences[j]);
       }
 
-      phrases.push(new Phrase(phraseInfo.sourceSegmentRange, phraseInfo.targetCut, confidence));
+      phrases.push(new Phrase(phraseInfo.sourceSegmentRange, phraseInfo.targetCut));
       trgPhraseStartIndex = phraseInfo.targetCut;
     }
 
-    return new TranslationResult(sourceSegmentLength, this.words, confidences, sources, alignment, phrases);
+    return new TranslationResult(
+      translation ?? this.targetDetokenizer.detokenize(this.targetTokens),
+      this.sourceTokens,
+      this.targetTokens,
+      confidences,
+      sources,
+      alignment,
+      phrases
+    );
   }
 
   private resizeAlignment(phraseIndex: number, colsToCopy: number[]): void {

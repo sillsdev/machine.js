@@ -1,3 +1,3 @@
 export interface Detokenizer<TData = string, TToken = string> {
-  detokenize(tokens: TToken[]): TData;
+  detokenize(tokens: Iterable<TToken>): TData;
 }

@@ -79,13 +79,13 @@ export class ErrorCorrectionModel {
   ): number {
     if (uncorrectedPrefixLen === 0) {
       for (const w of prefix) {
-        builder.appendWord(w, TranslationSources.Prefix);
+        builder.appendToken(w, TranslationSources.Prefix, -1);
       }
       return prefix.length;
     }
 
     const result = this.segmentEditDistance.computePrefix(
-      builder.words.slice(0, uncorrectedPrefixLen),
+      builder.targetTokens.slice(0, uncorrectedPrefixLen),
       prefix,
       isLastWordComplete,
       false

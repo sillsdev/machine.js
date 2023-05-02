@@ -13,7 +13,7 @@ export abstract class StringDetokenizer implements Detokenizer {
     const ops = tokens.map((t) => this.getOperation(ctxt, t));
     let output = '';
     for (let i = 0; i < tokens.length; i++) {
-      output += tokens[i];
+      output += this.transformToken(tokens[i]);
 
       let appendSeparator = true;
       if (i + 1 === ops.length) {
@@ -39,5 +39,9 @@ export abstract class StringDetokenizer implements Detokenizer {
 
   protected getSeparator(_tokens: string[], _ops: DetokenizeOperation[], _index: number): string {
     return ' ';
+  }
+
+  protected transformToken(token: string): string {
+    return token;
   }
 }
