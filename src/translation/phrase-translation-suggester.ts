@@ -15,7 +15,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
     prefixCount: number,
     isLastWordComplete: boolean,
     results: Iterable<TranslationResult>
-  ): TranslationSuggestion[] {
+  ): readonly TranslationSuggestion[] {
     const suggestions: TranslationSuggestion[] = [];
     const suggestionStrs: string[] = [];
     for (const result of results) {
@@ -38,10 +38,10 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
 
       let suggestionConfidence = -1;
       const indices: number[] = [];
-      let endingJ = startingJ;
       for (; k < result.phrases.length; k++) {
         const phrase = result.phrases[k];
         let phraseConfidence = 1;
+        let endingJ = startingJ;
         for (let j = startingJ; j < phrase.targetSegmentCut; j++) {
           if (result.sources[j] === TranslationSources.None) {
             // hit an unknown word, so don't include any more words in this suggestion
@@ -65,7 +65,9 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
           suggestionConfidence =
             suggestionConfidence == -1 ? phraseConfidence : Math.min(suggestionConfidence, phraseConfidence);
 
-          if (startingJ === endingJ) break;
+          if (startingJ === endingJ) {
+            break;
+          }
 
           for (let j = startingJ; j < endingJ; j++) {
             indices.push(j);
@@ -85,11 +87,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         continue;
       }
 
-      const newSuggestion = new TranslationSuggestion(
-        result,
-        indices,
-        suggestionConfidence < 0 ? 0 : suggestionConfidence
-      );
+      const newSuggestion = new TranslationSuggestion(result, indices, suggestionConfidence);
       // make sure this suggestion isn't a duplicate of a better suggestion
       const newSuggestionStr = newSuggestion.targetWords.join('\u0001');
       let isDuplicate = false;

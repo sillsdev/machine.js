@@ -62,7 +62,31 @@ describe('PhraseTranslationSuggester', () => {
     expect(suggestions[0].targetWords).toEqual(['this', 'is']);
   });
 
-  it('includes completed word', () => {
+  it('ends at bad word', () => {
+    const builder = new TranslationResultBuilder(['esto', 'es', 'una', 'prueba', '.']);
+    builder.appendToken('this', TranslationSources.Smt, 0.5);
+    builder.appendToken('is', TranslationSources.Smt, 0.5);
+    builder.appendToken('a', TranslationSources.Smt, 0.5);
+    builder.markPhrase(
+      createRange(0, 3),
+      new WordAlignmentMatrix(3, 3, [
+        [0, 0],
+        [1, 1],
+        [2, 2],
+      ])
+    );
+    builder.appendToken('bad', TranslationSources.Smt, 0.1);
+    builder.appendToken('test', TranslationSources.Smt, 0.5);
+    builder.markPhrase(createRange(3, 4), new WordAlignmentMatrix(1, 2, [[0, 1]]));
+    builder.appendToken('.', TranslationSources.Smt, 0.5);
+    builder.markPhrase(createRange(4, 5), new WordAlignmentMatrix(1, 1, [[0, 0]]));
+
+    const suggester = new PhraseTranslationSuggester(0.2);
+    const suggestions = suggester.getSuggestions(1, 0, true, [builder.toResult()]);
+    expect(suggestions[0].targetWords).toEqual(['this', 'is', 'a']);
+  });
+
+  it('includes incomplete word', () => {
     const builder = new TranslationResultBuilder(['esto', 'es', 'una', 'prueba', '.']);
     builder.appendToken('this', TranslationSources.Smt | TranslationSources.Prefix, 0.5);
     builder.appendToken('is', TranslationSources.Smt, 0.5);
@@ -90,7 +114,7 @@ describe('PhraseTranslationSuggester', () => {
     expect(suggestions[0].targetWords).toEqual(['this', 'is', 'a', 'test']);
   });
 
-  it('does not include prefix word', () => {
+  it('does not include completed prefix word', () => {
     const builder = new TranslationResultBuilder(['esto', 'es', 'una', 'prueba', '.']);
     builder.appendToken('this', TranslationSources.Smt | TranslationSources.Prefix, 0.5);
     builder.appendToken('is', TranslationSources.Smt, 0.5);

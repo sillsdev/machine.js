@@ -10,5 +10,5 @@ export interface TranslationSuggester {
     prefixCount: number,
     isLastWordComplete: boolean,
     results: Iterable<TranslationResult>
-  ): TranslationSuggestion[];
+  ): readonly TranslationSuggestion[];
 }
