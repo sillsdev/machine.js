@@ -20,6 +20,12 @@ export class WordAlignmentMatrix {
   }
 
   set(i: number, j: number, value: boolean): void {
+    if (i >= this.rowCount) {
+      throw new Error('i is out of range.');
+    }
+    if (j >= this.columnCount) {
+      throw new Error('j is out of range.');
+    }
     this.matrix[i][j] = value;
   }
 

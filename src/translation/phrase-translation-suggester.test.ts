@@ -289,8 +289,8 @@ describe('PhraseTranslationSuggester', () => {
     builder.markPhrase(
       createRange(0, 3),
       new WordAlignmentMatrix(3, 2, [
-        [0, 1],
-        [1, 2],
+        [1, 0],
+        [2, 1],
       ])
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
