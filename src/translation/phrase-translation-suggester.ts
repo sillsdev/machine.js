@@ -7,6 +7,52 @@ import { TranslationSuggestion } from './translation-suggestion';
 
 const ALL_PUNCT_REGEXP = XRegExp('^\\p{P}*$');
 
+function computeKmpTable(newSuggestion: readonly string[]): number[] {
+  const table = new Array<number>(newSuggestion.length);
+  let len = 0;
+  let i = 1;
+  table[0] = 0;
+
+  while (i < newSuggestion.length) {
+    if (newSuggestion[i] === newSuggestion[len]) {
+      len++;
+      table[i] = len;
+      i++;
+    } else if (len !== 0) {
+      len = table[len - 1];
+    } else {
+      table[i] = len;
+      i++;
+    }
+  }
+  return table;
+}
+
+function isSubsequence(
+  table: readonly number[],
+  newSuggestion: readonly string[],
+  suggestion: readonly string[]
+): boolean {
+  let j = 0;
+  let i = 0;
+  while (i < suggestion.length) {
+    if (newSuggestion[j] === suggestion[i]) {
+      j++;
+      i++;
+    }
+    if (j === newSuggestion.length) {
+      return true;
+    } else if (i < suggestion.length && newSuggestion[j] !== suggestion[i]) {
+      if (j !== 0) {
+        j = table[j - 1];
+      } else {
+        i++;
+      }
+    }
+  }
+  return false;
+}
+
 export class PhraseTranslationSuggester implements TranslationSuggester {
   constructor(public confidenceThreshold = 0, public breakOnPunctuation = true) {}
 
@@ -17,7 +63,6 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
     results: Iterable<TranslationResult>
   ): readonly TranslationSuggestion[] {
     const suggestions: TranslationSuggestion[] = [];
-    const suggestionStrs: string[] = [];
     for (const result of results) {
       let startingJ = prefixCount;
       if (!isLastWordComplete) {
@@ -89,16 +134,24 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
 
       const newSuggestion = new TranslationSuggestion(result, indices, suggestionConfidence);
       // make sure this suggestion isn't a duplicate of a better suggestion
-      const newSuggestionStr = newSuggestion.targetWords.join('\u0001');
       let isDuplicate = false;
-      for (const suggestionStr of suggestionStrs) {
-        if (suggestionStr.length >= newSuggestionStr.length && suggestionStr.includes(newSuggestionStr)) {
-          isDuplicate = true;
-          break;
+      let newSuggestionsWords: string[] | undefined;
+      let table: number[] | undefined;
+      for (const suggestion of suggestions) {
+        if (suggestion.targetWordIndices.length >= newSuggestion.targetWordIndices.length) {
+          if (newSuggestionsWords == null) {
+            newSuggestionsWords = newSuggestion.targetWords;
+          }
+          if (table == null) {
+            table = computeKmpTable(newSuggestionsWords);
+          }
+          if (isSubsequence(table, newSuggestionsWords, suggestion.targetWords)) {
+            isDuplicate = true;
+            break;
+          }
         }
       }
       if (!isDuplicate) {
-        suggestionStrs.push(newSuggestionStr);
         suggestions.push(newSuggestion);
         if (suggestions.length === n) {
           break;
