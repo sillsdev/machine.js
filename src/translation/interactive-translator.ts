@@ -51,17 +51,17 @@ export class InteractiveTranslator {
     return this.segment.length <= MAX_SEGMENT_LENGTH;
   }
 
-  setPrefix(prefix: string): void {
-    if (this._prefix !== prefix) {
+  setPrefix(prefix: string, isLastWordComplete?: boolean): void {
+    if (this._prefix !== prefix || (isLastWordComplete != null && isLastWordComplete !== this._isLastWordComplete)) {
       this._prefix = prefix;
-      this.correct();
+      this.correct(isLastWordComplete);
     }
   }
 
-  appendToPrefix(addition: string): void {
-    if (addition !== '') {
+  appendToPrefix(addition: string, isLastWordComplete?: boolean): void {
+    if (addition !== '' || (isLastWordComplete != null && isLastWordComplete !== this._isLastWordComplete)) {
       this._prefix += addition;
-      this.correct();
+      this.correct(isLastWordComplete);
     }
   }
 
@@ -96,11 +96,15 @@ export class InteractiveTranslator {
     return this.wordGraphProcessor.getResults();
   }
 
-  private correct(): void {
+  private correct(isLastWordComplete?: boolean): void {
     this._prefixWordRanges = Array.from(this.targetTokenizer.tokenizeAsRanges(this.prefix));
-    this._isLastWordComplete =
-      this.prefixWordRanges.length === 0 ||
-      this.prefixWordRanges[this.prefixWordRanges.length - 1].end < this.prefix.length;
+    if (isLastWordComplete != null) {
+      this._isLastWordComplete = isLastWordComplete;
+    } else {
+      this._isLastWordComplete =
+        this.prefixWordRanges.length === 0 ||
+        this.prefixWordRanges[this.prefixWordRanges.length - 1].end < this.prefix.length;
+    }
     this.wordGraphProcessor.correct(split(this.prefix, this.prefixWordRanges), this.isLastWordComplete);
   }
 
