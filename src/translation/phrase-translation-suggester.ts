@@ -1,11 +1,9 @@
-import XRegExp from 'xregexp';
-
 import { TranslationResult } from './translation-result';
 import { TranslationSources } from './translation-sources';
 import { TranslationSuggester } from './translation-suggester';
 import { TranslationSuggestion } from './translation-suggestion';
 
-const ALL_PUNCT_REGEXP = XRegExp('^\\p{P}*$');
+const ALL_PUNCT_REGEXP = /^\p{P}*$/u;
 
 function computeKmpTable(newSuggestion: readonly string[]): number[] {
   const table = new Array<number>(newSuggestion.length);

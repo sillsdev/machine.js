@@ -46,8 +46,7 @@
   },
   "dependencies": {
     "gensequence": "^3.1.1",
-    "mnemonist": "^0.38.3",
-    "xregexp": "^5.1.0"
+    "mnemonist": "^0.38.3"
   },
   "files": [
     "LICENSE",
