@@ -1,4 +1,3 @@
-import XRegExp from 'xregexp';
 import { isPunctuation } from '../string-utils';
 import { DetokenizeOperation, StringDetokenizer } from './string-detokenizer';
 
@@ -29,7 +28,7 @@ const QUOTATION_MARKS = new Map<string, QuoteType>([
   ['›', QuoteType.SingleAngle],
 ]);
 
-const MERGE_RIGHT_REGEX: RegExp = XRegExp('^\\p{Sc}|[([{¿¡<]$');
+const MERGE_RIGHT_REGEX = /^\p{Sc}|[([{¿¡<]$/u;
 
 export class LatinWordDetokenizer extends StringDetokenizer {
   protected createContext(): string[] {

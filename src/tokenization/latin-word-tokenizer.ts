@@ -1,11 +1,9 @@
-import XRegExp from 'xregexp';
-
 import { createRange, Range } from '../annotations/range';
 import { isControl, isPunctuation, isSymbol } from '../string-utils';
 import { WhitespaceTokenizer } from './whitespace-tokenizer';
 
-const INNER_WORD_PUNCT_REGEX: RegExp = XRegExp("^[&\\-.:=,?@\xAD\xB7\u2010\u2011\u2019\u2027]|['_]+");
-const URL_REGEX: RegExp = XRegExp('^(?:[\\w-]+://?|www[.])[^\\s()<>]+(?:[\\w\\d]+|(?:[^\\p{P}\\s]|/))', 'i');
+const INNER_WORD_PUNCT_REGEX = /^[&\-.:=,?@\xAD\xB7\u2010\u2011\u2019\u2027]|['_]+/u;
+const URL_REGEX = /^(?:[\w-]+:\/\/?|www[.])[^\s()<>]+(?:[\w\d]+|(?:[^\p{P}\s]|\/))/iu;
 
 export class TokenizeContext {
   index = 0;

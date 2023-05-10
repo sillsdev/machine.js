@@ -1,11 +1,10 @@
 import { genSequence } from 'gensequence';
-import XRegExp from 'xregexp';
 
-const WHITESPACE_REGEX: RegExp = XRegExp('^\\p{Z}+$');
-const PUNCT_REGEX: RegExp = XRegExp('^\\p{P}+$');
-const SYMBOL_REGEX: RegExp = XRegExp('^\\p{S}+$');
-const CONTROL_REGEX: RegExp = XRegExp('^\\p{Cc}+$');
-const LOWER_REGEX: RegExp = XRegExp('^\\p{Ll}+$');
+const WHITESPACE_REGEX = /^\p{Z}+$/u;
+const PUNCT_REGEX = /^\p{P}+$/u;
+const SYMBOL_REGEX = /^\p{S}+$/u;
+const CONTROL_REGEX = /^\p{Cc}+$/u;
+const LOWER_REGEX = /^\p{Ll}+$/u;
 const SENTENCE_TERMINALS: Set<string> = new Set<string>([
   '.',
   '!',
