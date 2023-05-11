@@ -74,8 +74,10 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         }
       }
 
+      let phraseStart = 0;
       let k = 0;
       while (k < result.phrases.length && result.phrases[k].targetSegmentCut <= startingJ) {
+        phraseStart = result.phrases[k].targetSegmentCut;
         k++;
       }
 
@@ -85,23 +87,24 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
         const phrase = result.phrases[k];
         let phraseConfidence = 1;
         let endingJ = startingJ;
-        for (let j = startingJ; j < phrase.targetSegmentCut; j++) {
+        for (let j = phraseStart; j < phrase.targetSegmentCut; j++) {
           if (result.sources[j] === TranslationSources.None) {
             // hit an unknown word, so don't include any more words in this suggestion
             phraseConfidence = 0;
             break;
           }
-          const word = result.targetTokens[j];
-          if (this.breakOnPunctuation && ALL_PUNCT_REGEXP.test(word)) {
-            break;
-          }
+          if (j >= startingJ) {
+            const word = result.targetTokens[j];
+            if (this.breakOnPunctuation && ALL_PUNCT_REGEXP.test(word)) {
+              break;
+            }
 
+            endingJ = j + 1;
+          }
           phraseConfidence = Math.min(phraseConfidence, result.confidences[j]);
           if (phraseConfidence < this.confidenceThreshold) {
             break;
           }
-
-          endingJ = j + 1;
         }
 
         if (phraseConfidence >= this.confidenceThreshold) {
@@ -117,6 +120,7 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
           }
 
           startingJ = phrase.targetSegmentCut;
+          phraseStart = phrase.targetSegmentCut;
         } else {
           // hit a phrase with a low confidence, so don't include any more words in this suggestion
           break;

@@ -427,4 +427,33 @@ describe('PhraseTranslationSuggester', () => {
     const suggestions = suggester.getSuggestions(2, 0, true, results);
     expect(suggestions.length).toEqual(0);
   });
+
+  it('inserted prefix word', () => {
+    const builder = new TranslationResultBuilder(['esto', 'es', 'una', 'prueba', '.']);
+    builder.appendToken('this', TranslationSources.Smt | TranslationSources.Prefix, 0.5);
+    builder.appendToken('is', TranslationSources.Prefix, -1);
+    builder.appendToken('is', TranslationSources.Smt, 0.5);
+    builder.appendToken('a', TranslationSources.Smt, 0.5);
+    builder.markPhrase(
+      createRange(0, 3),
+      new WordAlignmentMatrix(3, 4, [
+        [0, 0],
+        [1, 2],
+        [2, 3],
+      ])
+    );
+    builder.appendToken('test', TranslationSources.Smt, 0.5);
+    builder.appendToken('.', TranslationSources.Smt, 0.1);
+    builder.markPhrase(
+      createRange(3, 5),
+      new WordAlignmentMatrix(2, 2, [
+        [0, 0],
+        [1, 1],
+      ])
+    );
+
+    const suggester = new PhraseTranslationSuggester(0.2);
+    const suggestions = suggester.getSuggestions(1, 2, true, [builder.toResult()]);
+    expect(suggestions.length).toEqual(0);
+  });
 });

@@ -78,7 +78,7 @@ export function isDelayedSentenceEnd(str: string): boolean {
 }
 
 export function hasSentenceEnding(str: string): boolean {
-  str = str.trimRight();
+  str = str.trimEnd();
   for (let i = str.length - 1; i >= 0; i--) {
     if (isSentenceTerminal(str[i])) {
       return true;
