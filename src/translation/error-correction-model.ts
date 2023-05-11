@@ -1,4 +1,4 @@
-﻿import { EcmScoreInfo } from './ecm-score-info';
+import { EcmScoreInfo } from './ecm-score-info';
 import { EditOperation } from './edit-operation';
 import { SegmentEditDistance } from './segment-edit-distance';
 import { TranslationResultBuilder } from './translation-result-builder';

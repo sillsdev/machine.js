@@ -1,10 +1,8 @@
-import { genSequence } from 'gensequence';
-import { Range, createRange } from '../annotations/range';
+import { createRange, Range } from '../annotations/range';
+import { map } from '../iterable-utils';
 
 export function split(str: string, ranges: Iterable<Range>): string[] {
-  return genSequence(ranges)
-    .map((r) => str.substring(r.start, r.end))
-    .toArray();
+  return Array.from(map(ranges, (r) => str.substring(r.start, r.end)));
 }
 
 export function* getRanges(str: string, tokens: Iterable<string>): IterableIterator<Range> {

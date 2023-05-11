@@ -1,5 +1,7 @@
-﻿import { MaxHeap } from 'mnemonist/heap';
+import { MaxHeap } from 'mnemonist/heap';
+
 import { LOG_ZERO } from '../statistics/log-space';
+import { Detokenizer } from '../tokenization/detokenizer';
 import { EcmScoreInfo } from './ecm-score-info';
 import { ErrorCorrectionModel } from './error-correction-model';
 import { TranslationResult } from './translation-result';
@@ -7,7 +9,6 @@ import { TranslationResultBuilder } from './translation-result-builder';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
 import { INITIAL_STATE, WordGraph } from './word-graph';
 import { WordGraphArc } from './word-graph-arc';
-import { Detokenizer } from '../tokenization/detokenizer';
 
 export class ErrorCorrectionWordGraphProcessor {
   confidenceThreshold = 0;

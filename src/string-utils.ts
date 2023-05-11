@@ -1,4 +1,4 @@
-import { genSequence } from 'gensequence';
+import { all, concat } from './iterable-utils';
 
 const WHITESPACE_REGEX = /^\p{Z}+$/u;
 const PUNCT_REGEX = /^\p{P}+$/u;
@@ -38,12 +38,8 @@ const QUOTATION_MARKS: Set<string> = new Set<string>([
   '‹',
   '›',
 ]);
-const DELAYED_SENTENCE_START: Set<string> = new Set<string>(
-  genSequence(QUOTATION_MARKS.values()).concat(['(', '[', '<', '{'])
-);
-const DELAYED_SENTENCE_END: Set<string> = new Set<string>(
-  genSequence(QUOTATION_MARKS.values()).concat([')', ']', '>', '}'])
-);
+const DELAYED_SENTENCE_START: Set<string> = new Set<string>(concat(QUOTATION_MARKS.values(), ['(', '[', '<', '{']));
+const DELAYED_SENTENCE_END: Set<string> = new Set<string>(concat(QUOTATION_MARKS.values(), [')', ']', '>', '}']));
 
 export function isWhitespace(c: string): boolean {
   return WHITESPACE_REGEX.test(c);
@@ -66,15 +62,15 @@ export function isLower(c: string): boolean {
 }
 
 export function isSentenceTerminal(str: string): boolean {
-  return str.length > 0 && genSequence(str).all((c) => SENTENCE_TERMINALS.has(c));
+  return str.length > 0 && all(str, (c) => SENTENCE_TERMINALS.has(c));
 }
 
 export function isDelayedSentenceStart(str: string): boolean {
-  return str.length > 0 && genSequence(str).all((c) => DELAYED_SENTENCE_START.has(c));
+  return str.length > 0 && all(str, (c) => DELAYED_SENTENCE_START.has(c));
 }
 
 export function isDelayedSentenceEnd(str: string): boolean {
-  return str.length > 0 && genSequence(str).all((c) => DELAYED_SENTENCE_END.has(c));
+  return str.length > 0 && all(str, (c) => DELAYED_SENTENCE_END.has(c));
 }
 
 export function hasSentenceEnding(str: string): boolean {

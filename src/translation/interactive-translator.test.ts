@@ -1,14 +1,15 @@
-import { genSequence } from 'gensequence';
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+
 import { createRange, Range } from '../annotations/range';
+import { first, take } from '../iterable-utils';
 import { MAX_SEGMENT_LENGTH } from './constants';
 import { InteractiveTranslationEngine } from './interactive-translation-engine';
 import { InteractiveTranslator } from './interactive-translator';
+import { InteractiveTranslatorFactory } from './interactive-translator-factory';
 import { TranslationSources } from './translation-sources';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
 import { WordGraph } from './word-graph';
 import { WordGraphArc } from './word-graph-arc';
-import { InteractiveTranslatorFactory } from './interactive-translator-factory';
 
 const SOURCE_SEGMENT = 'En el principio la Palabra ya existía .';
 
@@ -16,16 +17,16 @@ describe('InteractiveTranslator', () => {
   it('empty prefix', async () => {
     const env = new TestEnvironment();
     const translator = await env.createTranslator();
-    const result = genSequence(translator.getCurrentResults()).first();
-    expect(result?.translation).toEqual('In the beginning the Word already existía .');
+    const result = first(translator.getCurrentResults());
+    expect(result.translation).toEqual('In the beginning the Word already existía .');
   });
 
   it('add one complete word to prefix', async () => {
     const env = new TestEnvironment();
     const translator = await env.createTranslator();
     translator.appendToPrefix('In ');
-    const result = genSequence(translator.getCurrentResults()).first();
-    expect(result?.translation).toEqual('In the beginning the Word already existía .');
+    const result = first(translator.getCurrentResults());
+    expect(result.translation).toEqual('In the beginning the Word already existía .');
   });
 
   it('add one partial word to prefix', async () => {
@@ -33,16 +34,16 @@ describe('InteractiveTranslator', () => {
     const translator = await env.createTranslator();
     translator.appendToPrefix('In ');
     translator.appendToPrefix('t');
-    const result = genSequence(translator.getCurrentResults()).first();
-    expect(result?.translation).toEqual('In the beginning the Word already existía .');
+    const result = first(translator.getCurrentResults());
+    expect(result.translation).toEqual('In the beginning the Word already existía .');
   });
 
   it('force last word to be complete', async () => {
     const env = new TestEnvironment();
     const translator = await env.createTranslator();
     translator.appendToPrefix('In the beginning the Word already exist', true);
-    const result = genSequence(translator.getCurrentResults()).first();
-    expect(result?.translation).toEqual('In the beginning the Word already exist .');
+    const result = first(translator.getCurrentResults());
+    expect(result.translation).toEqual('In the beginning the Word already exist .');
   });
 
   it('remove one word from prefix', async () => {
@@ -50,8 +51,8 @@ describe('InteractiveTranslator', () => {
     const translator = await env.createTranslator();
     translator.appendToPrefix('In the beginning ');
     translator.setPrefix('In the ');
-    const result = genSequence(translator.getCurrentResults()).first();
-    expect(result?.translation).toEqual('In the beginning the Word already existía .');
+    const result = first(translator.getCurrentResults());
+    expect(result.translation).toEqual('In the beginning the Word already existía .');
   });
 
   it('remove entire prefix', async () => {
@@ -59,8 +60,8 @@ describe('InteractiveTranslator', () => {
     const translator = await env.createTranslator();
     translator.appendToPrefix('In the beginning ');
     translator.setPrefix('');
-    const result = genSequence(translator.getCurrentResults()).first();
-    expect(result?.translation).toEqual('In the beginning the Word already existía .');
+    const result = first(translator.getCurrentResults());
+    expect(result.translation).toEqual('In the beginning the Word already existía .');
   });
 
   it('source segment valid', async () => {
@@ -111,7 +112,7 @@ describe('InteractiveTranslator', () => {
     const env = new TestEnvironment();
     env.useSimpleWordGraph();
     const translator = await env.createTranslator();
-    const results = genSequence(translator.getCurrentResults()).take(2).toArray();
+    const results = Array.from(take(translator.getCurrentResults(), 2));
     expect(results[0].translation).toEqual('In the beginning the Word already existía .');
     expect(results[1].translation).toEqual('In the start the Word already existía .');
   });
@@ -123,13 +124,13 @@ describe('InteractiveTranslator', () => {
 
     translator.appendToPrefix('In the ');
 
-    let results = genSequence(translator.getCurrentResults()).take(2).toArray();
+    let results = Array.from(take(translator.getCurrentResults(), 2));
     expect(results[0].translation).toEqual('In the beginning the Word already existía .');
     expect(results[1].translation).toEqual('In the start the Word already existía .');
 
     translator.appendToPrefix('beginning ');
 
-    results = genSequence(translator.getCurrentResults()).take(2).toArray();
+    results = Array.from(take(translator.getCurrentResults(), 2));
     expect(results[0].translation).toEqual('In the beginning the Word already existía .');
     expect(results[1].translation).toEqual('In the beginning his Word already existía .');
   });

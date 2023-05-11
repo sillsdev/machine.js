@@ -1,6 +1,6 @@
-import { TranslationResult } from './translation-result';
 import { createRange } from '../annotations/range';
 import { PhraseTranslationSuggester } from './phrase-translation-suggester';
+import { TranslationResult } from './translation-result';
 import { TranslationResultBuilder } from './translation-result-builder';
 import { TranslationSources } from './translation-sources';
 import { WordAlignmentMatrix } from './word-alignment-matrix';

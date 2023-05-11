@@ -1,5 +1,5 @@
-import { genSequence } from 'gensequence';
 import { Range } from '../annotations/range';
+import { all } from '../iterable-utils';
 import { TranslationSources } from './translation-sources';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
 
@@ -16,6 +16,6 @@ export class WordGraphArc {
   ) {}
 
   get isUnknown(): boolean {
-    return genSequence(this.sources).all((s) => s === TranslationSources.None);
+    return all(this.sources, (s) => s === TranslationSources.None);
   }
 }

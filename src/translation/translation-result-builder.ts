@@ -1,12 +1,12 @@
 import { Range } from '../annotations/range';
+import { Detokenizer } from '../tokenization/detokenizer';
+import { WHITESPACE_DETOKENIZER } from '../tokenization/whitespace-detokenizer';
 import { EditOperation } from './edit-operation';
 import { Phrase } from './phrase';
 import { PhraseInfo } from './phrase-info';
 import { TranslationResult } from './translation-result';
 import { TranslationSources } from './translation-sources';
 import { WordAlignmentMatrix } from './word-alignment-matrix';
-import { Detokenizer } from '../tokenization/detokenizer';
-import { WHITESPACE_DETOKENIZER } from '../tokenization/whitespace-detokenizer';
 
 export class TranslationResultBuilder {
   private readonly _targetTokens: string[] = [];

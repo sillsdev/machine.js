@@ -1,14 +1,14 @@
-﻿import { genSequence } from 'gensequence';
+import { Range } from '../annotations/range';
+import { firstOrUndefined } from '../iterable-utils';
+import { Detokenizer } from '../tokenization/detokenizer';
+import { RangeTokenizer } from '../tokenization/range-tokenizer';
+import { getRanges, split } from '../tokenization/tokenizer-utils';
 import { MAX_SEGMENT_LENGTH } from './constants';
 import { ErrorCorrectionModel } from './error-correction-model';
 import { ErrorCorrectionWordGraphProcessor } from './error-correction-word-graph-processor';
 import { InteractiveTranslationEngine } from './interactive-translation-engine';
 import { TranslationResult } from './translation-result';
 import { WordGraph } from './word-graph';
-import { RangeTokenizer } from '../tokenization/range-tokenizer';
-import { Detokenizer } from '../tokenization/detokenizer';
-import { Range } from '../annotations/range';
-import { getRanges, split } from '../tokenization/tokenizer-utils';
 
 export class InteractiveTranslator {
   private _prefix = '';
@@ -72,7 +72,7 @@ export class InteractiveTranslator {
 
     let segmentWordRanges = this.segmentWordRanges;
     if (alignedOnly) {
-      const bestResult = genSequence(this.getCurrentResults()).first();
+      const bestResult = firstOrUndefined(this.getCurrentResults());
       if (bestResult == null) {
         return;
       }
