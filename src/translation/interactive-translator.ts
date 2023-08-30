@@ -1,4 +1,4 @@
-import { Range } from '../annotations/range';
+﻿import { Range } from '../annotations/range';
 import { firstOrUndefined } from '../iterable-utils';
 import { Detokenizer } from '../tokenization/detokenizer';
 import { RangeTokenizer } from '../tokenization/range-tokenizer';
@@ -48,7 +48,7 @@ export class InteractiveTranslator {
   }
 
   get isSegmentValid(): boolean {
-    return this.segment.length <= MAX_SEGMENT_LENGTH;
+    return this._segmentWordRanges.length <= MAX_SEGMENT_LENGTH;
   }
 
   setPrefix(prefix: string, isLastWordComplete?: boolean): void {

@@ -66,7 +66,13 @@ describe('InteractiveTranslator', () => {
 
   it('source segment valid', async () => {
     const env = new TestEnvironment();
-    const translator = await env.createTranslator();
+    const sourceTokens = Array<string>(MAX_SEGMENT_LENGTH);
+    sourceTokens.fill('word', 0, -1);
+    sourceTokens[sourceTokens.length - 1] = '.';
+    const sourceSegment = sourceTokens.join();
+    when(env.mockedEngine.getWordGraph(sourceSegment)).thenResolve(new WordGraph(sourceTokens));
+
+    const translator = await env.createTranslator(sourceSegment);
     expect(translator.isSegmentValid).toBeTruthy();
   });
 
