@@ -9,6 +9,6 @@ export interface TranslationSuggester {
     n: number,
     prefixCount: number,
     isLastWordComplete: boolean,
-    results: Iterable<TranslationResult>
+    results: Iterable<TranslationResult>,
   ): readonly TranslationSuggestion[];
 }

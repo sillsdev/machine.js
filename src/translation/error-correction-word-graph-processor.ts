@@ -28,7 +28,7 @@ export class ErrorCorrectionWordGraphProcessor {
     private readonly targetDetokenizer: Detokenizer,
     private readonly wordGraph: WordGraph,
     public readonly ecmWeight = 1,
-    public readonly wordGraphWeight = 1
+    public readonly wordGraphWeight = 1,
   ) {
     this.restScores = this.wordGraph.computeRestScores();
 
@@ -315,7 +315,7 @@ export class ErrorCorrectionWordGraphProcessor {
     builder: TranslationResultBuilder,
     prefix: string[],
     isLastWordComplete: boolean,
-    hypothesis: Hypothesis
+    hypothesis: Hypothesis,
   ): void {
     let uncorrectedPrefixLen: number;
     if (hypothesis.startArcIndex === -1) {
@@ -326,7 +326,7 @@ export class ErrorCorrectionWordGraphProcessor {
         builder,
         prefix.length,
         hypothesis.startArcIndex,
-        hypothesis.startArcWordIndex
+        hypothesis.startArcWordIndex,
       );
       const firstArc = this.wordGraph.arcs[hypothesis.startArcIndex];
       uncorrectedPrefixLen =
@@ -369,7 +369,7 @@ export class ErrorCorrectionWordGraphProcessor {
     builder: TranslationResultBuilder,
     procPrefixPos: number,
     arcIndex: number,
-    arcWordIndex: number
+    arcWordIndex: number,
   ): void {
     const arc = this.wordGraph.arcs[arcIndex];
 
@@ -387,7 +387,7 @@ export class ErrorCorrectionWordGraphProcessor {
   private updateCorrectionFromArc(
     builder: TranslationResultBuilder,
     arc: WordGraphArc,
-    alignmentColsToAddCount: number
+    alignmentColsToAddCount: number,
   ): void {
     for (let i = 0; i < arc.targetTokens.length; i++) {
       builder.appendToken(arc.targetTokens[i], arc.sources[i], arc.confidences[i]);
@@ -415,7 +415,7 @@ class Hypothesis {
     public score: number,
     public readonly startState: number,
     public readonly startArcIndex = -1,
-    public readonly startArcWordIndex = -1
+    public readonly startArcWordIndex = -1,
   ) {}
 
   clone(): Hypothesis {

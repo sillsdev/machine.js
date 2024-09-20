@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "moduleResolution": "node",
-    "module": "es2015",
-    "downlevelIteration": true,
+    "target": "ES2015",
+    "moduleResolution": "Node",
+    "module": "ES2015",
     "strict": true,
     "esModuleInterop": true,
-    "lib": ["es2017", "dom"]
+    "lib": ["ES2017", "DOM", "ES2018.Regexp"],
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   }
 }

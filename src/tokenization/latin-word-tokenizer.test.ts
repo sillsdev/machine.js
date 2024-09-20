@@ -164,7 +164,7 @@ describe('LatinWordTokenizer', () => {
   it('string with URL', () => {
     const tokenizer = new LatinWordTokenizer();
     expect(
-      Array.from(tokenizer.tokenize('This is an email address, http://www.test.com/page.html, in a sentence.'))
+      Array.from(tokenizer.tokenize('This is an email address, http://www.test.com/page.html, in a sentence.')),
     ).toEqual([
       'This',
       'is',

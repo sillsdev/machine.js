@@ -65,7 +65,7 @@ export class LatinWordTokenizer extends WhitespaceTokenizer {
   protected processCharacter(
     data: string,
     range: Range,
-    ctxt: TokenizeContext
+    ctxt: TokenizeContext,
   ): [Range | undefined, Range | undefined] {
     let tokenRanges: [Range | undefined, Range | undefined] = [undefined, undefined];
     const c = data[ctxt.index];

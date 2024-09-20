@@ -36,7 +36,7 @@ export abstract class EditDistance<TSeq, TItem> {
     x: TSeq,
     y: TSeq,
     isLastItemComplete: boolean,
-    usePrefixDelOp: boolean
+    usePrefixDelOp: boolean,
   ): DistMatrixResult {
     const distMatrix = this.initDistMatrix(x, y);
 
@@ -51,7 +51,7 @@ export abstract class EditDistance<TSeq, TItem> {
           usePrefixDelOp,
           j !== yCount || isLastItemComplete,
           i,
-          j
+          j,
         );
         distMatrix[i][j] = cellResult.cost;
       }
@@ -67,7 +67,7 @@ export abstract class EditDistance<TSeq, TItem> {
     usePrefixDelOp: boolean,
     isComplete: boolean,
     i: number,
-    j: number
+    j: number,
   ): DistMatrixCellResult {
     let op: EditOperation;
     let iPred: number;
@@ -132,7 +132,7 @@ export abstract class EditDistance<TSeq, TItem> {
     isLastItemComplete: boolean,
     usePrefixDelOp: boolean,
     i: number,
-    j: number
+    j: number,
   ): EditOperation[] {
     const yCount = this.getCount(y);
     const ops: EditOperation[] = [];
@@ -144,7 +144,7 @@ export abstract class EditDistance<TSeq, TItem> {
         usePrefixDelOp,
         j !== yCount || isLastItemComplete,
         i,
-        j
+        j,
       );
       i = result.iPred;
       j = result.jPred;

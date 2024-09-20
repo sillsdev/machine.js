@@ -24,7 +24,7 @@ export class InteractiveTranslator {
     targetDetokenizer: Detokenizer,
     public readonly segment: string,
     private readonly wordGraph: WordGraph,
-    private readonly sentenceStart: boolean
+    private readonly sentenceStart: boolean,
   ) {
     this.wordGraphProcessor = new ErrorCorrectionWordGraphProcessor(ecm, targetDetokenizer, this.wordGraph);
     this._segmentWordRanges = Array.from(getRanges(this.segment, wordGraph.sourceTokens));
@@ -82,11 +82,11 @@ export class InteractiveTranslator {
     if (segmentWordRanges.length > 0) {
       const sourceSegment = this.segment.substring(
         segmentWordRanges[0].start,
-        segmentWordRanges[segmentWordRanges.length - 1].end
+        segmentWordRanges[segmentWordRanges.length - 1].end,
       );
       const targetSegment = this._prefix.substring(
         this.prefixWordRanges[0].start,
-        this.prefixWordRanges[this.prefixWordRanges.length - 1].end
+        this.prefixWordRanges[this.prefixWordRanges.length - 1].end,
       );
       await this.engine.trainSegment(sourceSegment, targetSegment, this.sentenceStart);
     }

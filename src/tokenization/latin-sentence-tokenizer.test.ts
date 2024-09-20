@@ -38,7 +38,7 @@ describe('LatinSentenceTokenizer', () => {
   it('sentence with an internal quotation', () => {
     const tokenizer = new LatinSentenceTokenizer();
     expect(
-      Array.from(tokenizer.tokenize('"This is the first sentence!" he said. This is the second sentence.'))
+      Array.from(tokenizer.tokenize('"This is the first sentence!" he said. This is the second sentence.')),
     ).toEqual(['"This is the first sentence!" he said.', 'This is the second sentence.']);
   });
 

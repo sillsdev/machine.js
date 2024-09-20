@@ -5,6 +5,6 @@ export class PhraseInfo {
   constructor(
     public readonly sourceSegmentRange: Range,
     public targetCut: number,
-    public alignment: WordAlignmentMatrix
+    public alignment: WordAlignmentMatrix,
   ) {}
 }

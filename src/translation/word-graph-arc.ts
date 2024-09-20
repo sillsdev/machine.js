@@ -12,7 +12,7 @@ export class WordGraphArc {
     public readonly alignment: WordAlignmentMatrix,
     public readonly sourceSegmentRange: Range,
     public readonly sources: TranslationSources[],
-    public readonly confidences: number[]
+    public readonly confidences: number[],
   ) {}
 
   get isUnknown(): boolean {

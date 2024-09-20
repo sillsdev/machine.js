@@ -5,7 +5,10 @@ export interface Range<TOffset = number> {
 }
 
 class NumberRange implements Range {
-  constructor(public readonly start: number, public readonly end: number) {}
+  constructor(
+    public readonly start: number,
+    public readonly end: number,
+  ) {}
 
   get length(): number {
     return this.end - this.start;

@@ -39,7 +39,7 @@ export class EcmScoreInfo {
           results[j] = j - 1;
           break;
 
-        case EditOperation.Insert:
+        case EditOperation.Insert: {
           let tj = j;
           while (tj >= 0 && this.operations[tj] === EditOperation.Insert) {
             tj--;
@@ -49,6 +49,7 @@ export class EcmScoreInfo {
           }
           results[j] = tj;
           break;
+        }
 
         case EditOperation.Delete:
           results[j] = j;

@@ -29,7 +29,7 @@ function computeKmpTable(newSuggestion: readonly string[]): number[] {
 function isSubsequence(
   table: readonly number[],
   newSuggestion: readonly string[],
-  suggestion: readonly string[]
+  suggestion: readonly string[],
 ): boolean {
   let j = 0;
   let i = 0;
@@ -52,13 +52,16 @@ function isSubsequence(
 }
 
 export class PhraseTranslationSuggester implements TranslationSuggester {
-  constructor(public confidenceThreshold = 0, public breakOnPunctuation = true) {}
+  constructor(
+    public confidenceThreshold = 0,
+    public breakOnPunctuation = true,
+  ) {}
 
   getSuggestions(
     n: number,
     prefixCount: number,
     isLastWordComplete: boolean,
-    results: Iterable<TranslationResult>
+    results: Iterable<TranslationResult>,
   ): readonly TranslationSuggestion[] {
     const suggestions: TranslationSuggestion[] = [];
     for (const result of results) {

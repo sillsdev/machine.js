@@ -27,7 +27,7 @@ export class WordEditDistance extends EditDistance<string, string> {
       isLastItemComplete,
       usePrefixDelOp,
       this.getCount(x),
-      this.getCount(y)
+      this.getCount(y),
     );
     return { cost: matrixResult.cost, ops };
   }

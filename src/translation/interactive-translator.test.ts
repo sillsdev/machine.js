@@ -101,8 +101,8 @@ describe('InteractiveTranslator', () => {
       env.mockedEngine.trainSegment(
         'En el principio la Palabra ya existía .',
         'In the beginning the Word already existed .',
-        true
-      )
+        true,
+      ),
     ).once();
   });
 
@@ -160,7 +160,7 @@ function createArc(options: {
     new WordAlignmentMatrix(options.sourceSegmentRange.length, options.tokens.length, options.alignment),
     options.sourceSegmentRange,
     new Array<number>(options.tokens.length).fill(options.isUnknown ? TranslationSources.None : TranslationSources.Smt),
-    options.confidences
+    options.confidences,
   );
 }
 
@@ -488,7 +488,7 @@ class TestEnvironment {
         }),
       ],
       [12, 13, 14, 15, 16, 17, 18, 19, 20, 21],
-      -191.0998
+      -191.0998,
     );
 
     when(this.mockedEngine.getWordGraph(deepEqual(SOURCE_SEGMENT))).thenResolve(wordGraph);
@@ -583,7 +583,7 @@ class TestEnvironment {
           alignment: [[0, 0]],
         }),
       ],
-      [5]
+      [5],
     );
 
     when(this.mockedEngine.getWordGraph(deepEqual(SOURCE_SEGMENT))).thenResolve(wordGraph);

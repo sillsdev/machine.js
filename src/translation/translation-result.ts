@@ -16,7 +16,7 @@ export class TranslationResult {
     confidences: Iterable<number>,
     sources: Iterable<TranslationSources>,
     public readonly alignment: WordAlignmentMatrix,
-    phrases: Iterable<Phrase>
+    phrases: Iterable<Phrase>,
   ) {
     this._sourceTokens = Array.from(sourceTokens);
     this._targetTokens = Array.from(targetTokens);

@@ -13,7 +13,7 @@ export class WordGraph {
     public readonly sourceTokens: string[],
     public readonly arcs: WordGraphArc[] = [],
     finalStates: number[] = [],
-    public readonly initialStateScore: number = 0
+    public readonly initialStateScore = 0,
   ) {
     let maxState = -1;
     for (let i = 0; i < this.arcs.length; i++) {

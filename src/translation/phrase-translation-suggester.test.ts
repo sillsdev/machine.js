@@ -17,7 +17,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.1);
@@ -26,7 +26,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
 
     const suggester = new PhraseTranslationSuggester(0.2);
@@ -43,7 +43,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     builder.appendToken('a', TranslationSources.None, 0);
     builder.markPhrase(createRange(2, 3), new WordAlignmentMatrix(1, 1, [[0, 0]]));
@@ -54,7 +54,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
 
     const suggester = new PhraseTranslationSuggester(0.2);
@@ -73,7 +73,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('bad', TranslationSources.Smt, 0.1);
     builder.appendToken('test', TranslationSources.Smt, 0.5);
@@ -97,7 +97,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -106,7 +106,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
 
     const suggester = new PhraseTranslationSuggester(0.2);
@@ -125,7 +125,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -134,7 +134,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
 
     const suggester = new PhraseTranslationSuggester(0.2);
@@ -154,7 +154,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 1],
         [1, 2],
         [2, 3],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -163,7 +163,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
 
     const suggester = new PhraseTranslationSuggester(0.2);
@@ -183,7 +183,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -192,7 +192,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -206,7 +206,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -215,7 +215,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -229,7 +229,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -238,7 +238,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -261,7 +261,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -270,7 +270,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     builder.appendToken('second', TranslationSources.Smt, 0.1);
     builder.appendToken('sentence', TranslationSources.Smt, 0.1);
@@ -279,7 +279,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -291,7 +291,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(3, 2, [
         [1, 0],
         [2, 1],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -300,7 +300,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     builder.appendToken('second', TranslationSources.Smt, 0.1);
     builder.appendToken('sentence', TranslationSources.Smt, 0.1);
@@ -309,7 +309,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -333,7 +333,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 1],
         [1, 2],
         [2, 3],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -342,7 +342,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -356,7 +356,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -365,7 +365,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -387,7 +387,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -396,7 +396,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -410,7 +410,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 1],
         [2, 2],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.5);
@@ -419,7 +419,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
     results.push(builder.toResult());
 
@@ -440,7 +440,7 @@ describe('PhraseTranslationSuggester', () => {
         [0, 0],
         [1, 2],
         [2, 3],
-      ])
+      ]),
     );
     builder.appendToken('test', TranslationSources.Smt, 0.5);
     builder.appendToken('.', TranslationSources.Smt, 0.1);
@@ -449,7 +449,7 @@ describe('PhraseTranslationSuggester', () => {
       new WordAlignmentMatrix(2, 2, [
         [0, 0],
         [1, 1],
-      ])
+      ]),
     );
 
     const suggester = new PhraseTranslationSuggester(0.2);

@@ -12,7 +12,7 @@ export class InteractiveTranslatorFactory {
   constructor(
     public readonly engine: InteractiveTranslationEngine,
     public targetTokenizer: RangeTokenizer = WHITESPACE_TOKENIZER,
-    public targetDetokenizer: Detokenizer = WHITESPACE_DETOKENIZER
+    public targetDetokenizer: Detokenizer = WHITESPACE_DETOKENIZER,
   ) {}
 
   async create(segment: string, sentenceStart = true): Promise<InteractiveTranslator> {
@@ -23,7 +23,7 @@ export class InteractiveTranslatorFactory {
       this.targetDetokenizer,
       segment,
       await this.engine.getWordGraph(segment),
-      sentenceStart
+      sentenceStart,
     );
   }
 }

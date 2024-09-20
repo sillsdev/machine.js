@@ -16,7 +16,7 @@ export class ErrorCorrectionModel {
     hitProb: number,
     insFactor: number,
     substFactor: number,
-    delFactor: number
+    delFactor: number,
   ): void {
     let e: number;
     if (vocSize === 0) {
@@ -59,14 +59,14 @@ export class ErrorCorrectionModel {
     prevEsi: EcmScoreInfo,
     word: string,
     prefixDif: string[],
-    isLastWordComplete: boolean
+    isLastWordComplete: boolean,
   ): void {
     const ops = this.segmentEditDistance.incrComputePrefix(
       esi.scores,
       prevEsi.scores,
       word,
       prefixDif,
-      isLastWordComplete
+      isLastWordComplete,
     );
     esi.operations.push(...ops);
   }
@@ -75,7 +75,7 @@ export class ErrorCorrectionModel {
     builder: TranslationResultBuilder,
     uncorrectedPrefixLen: number,
     prefix: string[],
-    isLastWordComplete: boolean
+    isLastWordComplete: boolean,
   ): number {
     if (uncorrectedPrefixLen === 0) {
       for (const w of prefix) {
@@ -88,7 +88,7 @@ export class ErrorCorrectionModel {
       builder.targetTokens.slice(0, uncorrectedPrefixLen),
       prefix,
       isLastWordComplete,
-      false
+      false,
     );
     return builder.correctPrefix(result.wordOps, result.charOps, prefix, isLastWordComplete);
   }

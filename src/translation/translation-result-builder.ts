@@ -16,7 +16,7 @@ export class TranslationResultBuilder {
 
   constructor(
     public readonly sourceTokens: readonly string[],
-    public targetDetokenizer: Detokenizer = WHITESPACE_DETOKENIZER
+    public targetDetokenizer: Detokenizer = WHITESPACE_DETOKENIZER,
   ) {}
 
   get targetTokens(): readonly string[] {
@@ -49,7 +49,7 @@ export class TranslationResultBuilder {
     wordOps: EditOperation[],
     charOps: EditOperation[],
     prefix: string[],
-    isLastWordComplete: boolean
+    isLastWordComplete: boolean,
   ): number {
     let alignmentColsToCopy: number[] = [];
     let i = 0;
@@ -174,7 +174,7 @@ export class TranslationResultBuilder {
       confidences,
       sources,
       alignment,
-      phrases
+      phrases,
     );
   }
 

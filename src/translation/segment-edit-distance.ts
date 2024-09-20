@@ -52,7 +52,7 @@ export class SegmentEditDistance extends EditDistance<string[], string> {
     x: string[],
     y: string[],
     isLastItemComplete: boolean,
-    usePrefixDelOp: boolean
+    usePrefixDelOp: boolean,
   ): SegmentEditDistanceResult {
     const matrixResult = this.computeDistMatrix(x, y, isLastItemComplete, usePrefixDelOp);
 
@@ -68,7 +68,7 @@ export class SegmentEditDistance extends EditDistance<string[], string> {
         usePrefixDelOp,
         j !== y.length || isLastItemComplete,
         i,
-        j
+        j,
       );
       i = cellResult.iPred;
       j = cellResult.jPred;
@@ -107,7 +107,7 @@ export class SegmentEditDistance extends EditDistance<string[], string> {
     prevScores: number[],
     xWord: string,
     yIncr: string[],
-    isLastItemComplete: boolean
+    isLastItemComplete: boolean,
   ): EditOperation[] {
     const x: string[] = [xWord];
     const y = new Array<string>(prevScores.length - 1);
@@ -140,7 +140,7 @@ export class SegmentEditDistance extends EditDistance<string[], string> {
         false,
         j !== y.length || isLastItemComplete,
         1,
-        j
+        j,
       );
       scores[j] = cellResult.cost;
       distMatrix[1][j] = cellResult.cost;
@@ -158,7 +158,7 @@ export class SegmentEditDistance extends EditDistance<string[], string> {
     return seq[index];
   }
 
-  protected getHitCost(x: string, y: string, _isComplete: boolean): number {
+  protected getHitCost(_x: string, y: string, _isComplete: boolean): number {
     return this.hitCost * y.length;
   }
 

@@ -4,7 +4,7 @@ export class WordAlignmentMatrix {
   constructor(
     public readonly rowCount: number,
     public readonly columnCount: number,
-    setValues: Iterable<[number, number]> = []
+    setValues: Iterable<[number, number]> = [],
   ) {
     this.setAll(false);
     for (const [i, j] of setValues) {

@@ -6,7 +6,7 @@ export class ZwspWordTokenizer extends LatinWordTokenizer {
   protected processCharacter(
     data: string,
     range: Range,
-    ctxt: TokenizeContext
+    ctxt: TokenizeContext,
   ): [Range | undefined, Range | undefined] {
     if (isWhitespace(data[ctxt.index])) {
       let endIndex = ctxt.index + 1;

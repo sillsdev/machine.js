@@ -29,11 +29,11 @@ describe('LatinWordDetokenizer', () => {
   it('array with multiple quotes', () => {
     const detokenizer = new LatinWordDetokenizer();
     expect(
-      detokenizer.detokenize(['“', '‘', "Moses'", '’', 'cat', 'said', '‘', 'Meow', '’', 'to', 'the', 'dog', '.', '”'])
+      detokenizer.detokenize(['“', '‘', "Moses'", '’', 'cat', 'said', '‘', 'Meow', '’', 'to', 'the', 'dog', '.', '”']),
     ).toEqual("“‘Moses'’ cat said ‘Meow’ to the dog.”");
 
     expect(
-      detokenizer.detokenize(['"', "Moses's", 'cat', 'said', "'", 'Meow', "'", 'to', 'the', 'dog', '.', '"'])
+      detokenizer.detokenize(['"', "Moses's", 'cat', 'said', "'", 'Meow', "'", 'to', 'the', 'dog', '.', '"']),
     ).toEqual("\"Moses's cat said 'Meow' to the dog.\"");
   });
 

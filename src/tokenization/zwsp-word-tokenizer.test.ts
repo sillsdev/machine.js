@@ -14,7 +14,7 @@ describe('ZwspWordTokenizer', () => {
   it('string with space', () => {
     const tokenizer = new ZwspWordTokenizer();
     expect(Array.from(tokenizer.tokenize('គែស\u200bមាង់ អី\u200bនៃ\u200bជេង\u200bនារ\u200bត៝ល់\u200bព្វាន់។'))).toEqual(
-      ['គែស', 'មាង់', ' ', 'អី', 'នៃ', 'ជេង', 'នារ', 'ត៝ល់', 'ព្វាន់', '។']
+      ['គែស', 'មាង់', ' ', 'អី', 'នៃ', 'ជេង', 'នារ', 'ត៝ល់', 'ព្វាន់', '។'],
     );
   });
 
@@ -70,7 +70,7 @@ describe('ZwspWordTokenizer', () => {
   it('string with multiple spaces', () => {
     const tokenizer = new ZwspWordTokenizer();
     expect(
-      Array.from(tokenizer.tokenize('គែស\u200bមាង់  អី\u200bនៃ\u200bជេង\u200bនារ\u200bត៝ល់\u200bព្វាន់។'))
+      Array.from(tokenizer.tokenize('គែស\u200bមាង់  អី\u200bនៃ\u200bជេង\u200bនារ\u200bត៝ល់\u200bព្វាន់។')),
     ).toEqual(['គែស', 'មាង់', '  ', 'អី', 'នៃ', 'ជេង', 'នារ', 'ត៝ល់', 'ព្វាន់', '។']);
 
     expect(Array.from(tokenizer.tokenize('ไป\u200bไหน\u200bมา?  เขา\u200bถาม\u200bผม.'))).toEqual([
