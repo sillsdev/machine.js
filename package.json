@@ -54,5 +54,8 @@
     "LICENSE",
     "README.md",
     "lib/**/*"
-  ]
+  ],
+  "overrides": {
+    "glob": "11.0.0"
+  }
 }
