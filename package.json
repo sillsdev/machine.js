@@ -2,15 +2,43 @@
   "name": "@sillsdev/machine",
   "version": "2.4.2",
   "description": "A natural language processing library that is focused on providing tools for processing resource-poor languages.",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "type": "module",
+  "types": "./dist/index.d.ts",
+  "module": "./dist/index.js",
+  "main": "./dist/index.cjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./corpora": {
+      "types": "./dist/corpora/index.d.ts",
+      "import": "./dist/corpora/index.js",
+      "require": "./dist/corpora/index.cjs"
+    },
+    "./tokenization": {
+      "types": "./dist/tokenization/index.d.ts",
+      "import": "./dist/tokenization/index.js",
+      "require": "./dist/tokenization/index.cjs"
+    },
+    "./translation": {
+      "types": "./dist/translation/index.d.ts",
+      "import": "./dist/translation/index.js",
+      "require": "./dist/translation/index.cjs"
+    }
+  },
+  "browser": {
+    "fs/promises": false,
+    "path": false,
+    "fs": false
+  },
   "scripts": {
     "test": "jest",
-    "build": "tsc -b tsconfig.build.json",
-    "prepare": "npm run build",
-    "prettier": "prettier --write \"**/*.{ts,js,json,md,yml}\"",
-    "prettier:ci": "prettier --list-different \"**/*.{ts,js,json,md,yml}\"",
-    "test:ci": "jest --config jest.config.js --ci --reporters=jest-junit --coverage",
+    "build": "tsup && copyfiles -u 1 src/**/*.sty dist",
+    "prettier": "prettier --write \"**/*.{ts,js,mjs,json,md,yml}\"",
+    "prettier:ci": "prettier --list-different \"**/*.{ts,js,mjs,json,md,yml}\"",
+    "test:ci": "jest --config jest.config.js --ci --coverage",
     "lint": "eslint . --max-warnings 0"
   },
   "repository": {
@@ -24,7 +52,7 @@
     "machine",
     "translation"
   ],
-  "author": "SIL International",
+  "author": "SIL Global",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/sillsdev/machine.js/issues"
@@ -34,6 +62,8 @@
     "@eslint/js": "^9.10.0",
     "@types/eslint__js": "^8.42.3",
     "@types/jest": "^29.5.13",
+    "copyfiles": "^2.4.1",
+    "esbuild-fix-imports-plugin": "^1.0.4",
     "eslint": "^9.10.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-import-resolver-typescript": "^3.6.3",
@@ -44,15 +74,18 @@
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",
     "ts-mockito": "^2.6.1",
+    "tsup": "^8.3.0",
     "typescript": "^5.5.4",
     "typescript-eslint": "^8.6.0"
   },
   "dependencies": {
+    "@sillsdev/scripture": "^2.0.1",
+    "fast-xml-parser": "^4.5.0",
     "mnemonist": "^0.39.8"
   },
   "files": [
     "LICENSE",
     "README.md",
-    "lib/**/*"
+    "dist/**/*"
   ]
 }

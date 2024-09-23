@@ -1,5 +1,3 @@
-// @ts-check
-
 import eslint from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import simpleImportSort from "eslint-plugin-simple-import-sort";
@@ -7,7 +5,7 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["coverage/*", "public/*", "lib/*", "package-lock.json", "jest.config.js"],
+    ignores: ["coverage/*", "public/*", "dist/*", "package-lock.json", "jest.config.js", "tsup.config.js"],
   },
   eslint.configs.recommended,
   ...tseslint.configs.strictTypeChecked,
@@ -37,6 +35,9 @@ export default tseslint.config(
           ignoreRestSiblings: true,
         },
       ],
+      "@typescript-eslint/no-unsafe-enum-comparison": "off",
+      "@typescript-eslint/no-non-null-assertion": "off",
+      "@typescript-eslint/no-empty-function": "off",
     },
   },
   {
