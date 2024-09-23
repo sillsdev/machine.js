@@ -4,6 +4,8 @@
     "moduleResolution": "Node",
     "module": "ES2015",
     "strict": true,
+    "declaration": true,
+    "sourceMap": true,
     "esModuleInterop": true,
     "lib": ["ES2017", "DOM", "ES2018.Regexp"],
     "skipLibCheck": true,

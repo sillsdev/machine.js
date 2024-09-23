@@ -1,6 +1,5 @@
 # compiled output
-/lib
-/ts3.4
+/dist
 *.tgz
 
 # test output
