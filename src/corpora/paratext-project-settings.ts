@@ -51,8 +51,7 @@ export class ParatextProjectSettings {
     let bookPart: string;
     if (this.fileNameForm === 'MAT') {
       bookPart = bookId;
-    }
-    if (this.fileNameForm === '40' || this.fileNameForm === '41') {
+    } else if (this.fileNameForm === '40' || this.fileNameForm === '41') {
       bookPart = getBookFileNameDigits(bookId);
     } else {
       bookPart = getBookFileNameDigits(bookId) + bookId;
