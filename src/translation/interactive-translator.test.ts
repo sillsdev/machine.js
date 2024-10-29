@@ -1,4 +1,5 @@
 import { anything, deepEqual, instance, mock, verify, when } from 'ts-mockito';
+import { describe, expect, it } from 'vitest';
 
 import { createRange, Range } from '../annotations/range';
 import { first, take } from '../iterable-utils';

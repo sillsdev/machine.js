@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { createRange } from '../annotations/range';
 import { PhraseTranslationSuggester } from './phrase-translation-suggester';
 import { TranslationResult } from './translation-result';

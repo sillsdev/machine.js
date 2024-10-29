@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { LatinWordDetokenizer } from './latin-word-detokenizer';
 
 describe('LatinWordDetokenizer', () => {

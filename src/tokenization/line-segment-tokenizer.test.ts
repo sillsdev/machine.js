@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { LineSegmentTokenizer } from './line-segment-tokenizer';
 
 describe('LineSegmentTokenizer', () => {

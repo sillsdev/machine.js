@@ -1,5 +1,6 @@
 import { readFileSync } from 'fs';
 import { join } from 'path';
+import { describe, expect, it } from 'vitest';
 
 import { USFM_TEST_PROJECT_PATH } from './test-helpers';
 import { createUsfmStylesheet } from './usfm-stylesheet';

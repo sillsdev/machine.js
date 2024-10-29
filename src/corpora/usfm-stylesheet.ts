@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { access, readFile } from 'fs/promises';
-import { basename, resolve } from 'path';
+import { basename, dirname, resolve } from 'path';
+import { fileURLToPath } from 'url';
 
 import {
   UsfmJustification,
@@ -11,6 +12,7 @@ import {
   UsfmTextType,
 } from './usfm-tag';
 
+const DIRNAME = dirname(fileURLToPath(import.meta.url));
 const CELL_RANGE_REGEX = /^(t[ch][cr]?[1-5])-([2-5])$/;
 
 export async function createUsfmStylesheet(
@@ -74,7 +76,7 @@ export class UsfmStylesheet {
     } catch {
       const name = basename(fileName);
       if (name === 'usfm.sty' || name === 'usfm_sb.sty') {
-        fileName = resolve(__dirname, name);
+        fileName = resolve(DIRNAME, name);
       } else {
         throw new Error(`The stylesheet does not exist.`);
       }
@@ -87,7 +89,7 @@ export class UsfmStylesheet {
     if (!existsSync(fileName)) {
       const name = basename(fileName);
       if (name === 'usfm.sty' || name === 'usfm_sb.sty') {
-        fileName = resolve(__dirname, name);
+        fileName = resolve(DIRNAME, name);
       } else {
         throw new Error(`The stylesheet does not exist.`);
       }

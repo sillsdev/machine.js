@@ -9,5 +9,6 @@ export default defineConfig({
   tsconfig: 'tsconfig.build.json',
   bundle: false,
   sourcemap: false,
+  shims: true,
   esbuildPlugins: [fixImportsPlugin()],
 });

@@ -1,4 +1,5 @@
 import { ScrVers } from '@sillsdev/scripture';
+import { describe, expect, it } from 'vitest';
 
 import { ParatextProjectSettings } from './paratext-project-settings';
 import { UsfmStylesheet } from './usfm-stylesheet';

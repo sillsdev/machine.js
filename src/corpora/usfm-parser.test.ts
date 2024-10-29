@@ -1,3 +1,5 @@
+import { describe, it } from 'vitest';
+
 import { UsfmParser } from './usfm-parser';
 
 describe('UsfmParser', () => {

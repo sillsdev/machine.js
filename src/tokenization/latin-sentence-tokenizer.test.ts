@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest';
+
 import { LatinSentenceTokenizer } from './latin-sentence-tokenizer';
 
 describe('LatinSentenceTokenizer', () => {
