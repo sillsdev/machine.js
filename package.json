@@ -8,24 +8,44 @@
   "main": "./dist/index.cjs",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
     },
     "./corpora": {
-      "types": "./dist/corpora/index.d.ts",
-      "import": "./dist/corpora/index.js",
-      "require": "./dist/corpora/index.cjs"
+      "import": {
+        "types": "./dist/corpora/index.d.ts",
+        "default": "./dist/corpora/index.js"
+      },
+      "require": {
+        "types": "./dist/corpora/index.d.cts",
+        "default": "./dist/corpora/index.cjs"
+      }
     },
     "./tokenization": {
-      "types": "./dist/tokenization/index.d.ts",
-      "import": "./dist/tokenization/index.js",
-      "require": "./dist/tokenization/index.cjs"
+      "import": {
+        "types": "./dist/tokenization/index.d.ts",
+        "default": "./dist/tokenization/index.js"
+      },
+      "require": {
+        "types": "./dist/tokenization/index.d.cts",
+        "default": "./dist/tokenization/index.cjs"
+      }
     },
     "./translation": {
-      "types": "./dist/translation/index.d.ts",
-      "import": "./dist/translation/index.js",
-      "require": "./dist/translation/index.cjs"
+      "import": {
+        "types": "./dist/translation/index.d.ts",
+        "default": "./dist/translation/index.js"
+      },
+      "require": {
+        "types": "./dist/translation/index.d.cts",
+        "default": "./dist/translation/index.cjs"
+      }
     }
   },
   "browser": {
@@ -40,7 +60,8 @@
     "prettier": "prettier --write \"**/*.{ts,js,mjs,json,md,yml}\"",
     "prettier:ci": "prettier --list-different \"**/*.{ts,js,mjs,json,md,yml}\"",
     "test:ci": "vitest run --coverage",
-    "lint": "eslint . --max-warnings 0"
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "attw --pack ."
   },
   "repository": {
     "type": "git",
@@ -60,6 +81,7 @@
   },
   "homepage": "https://github.com/sillsdev/machine.js",
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.16.4",
     "@eslint/js": "^9.10.0",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.8.4",
