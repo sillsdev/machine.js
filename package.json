@@ -1,6 +1,6 @@
 {
   "name": "@sillsdev/machine",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A natural language processing library that is focused on providing tools for processing resource-poor languages.",
   "type": "module",
   "types": "./dist/index.d.ts",
