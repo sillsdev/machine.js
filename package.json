@@ -60,8 +60,7 @@
     "prettier": "prettier --write \"**/*.{ts,js,mjs,json,md,yml}\"",
     "prettier:ci": "prettier --list-different \"**/*.{ts,js,mjs,json,md,yml}\"",
     "test:ci": "vitest run --coverage",
-    "lint": "eslint . --max-warnings 0",
-    "check-types": "attw --pack ."
+    "lint": "eslint . --max-warnings 0"
   },
   "repository": {
     "type": "git",
@@ -81,7 +80,6 @@
   },
   "homepage": "https://github.com/sillsdev/machine.js",
   "devDependencies": {
-    "@arethetypeswrong/cli": "^0.16.4",
     "@eslint/js": "^9.10.0",
     "@types/eslint__js": "^8.42.3",
     "@types/node": "^22.8.4",
