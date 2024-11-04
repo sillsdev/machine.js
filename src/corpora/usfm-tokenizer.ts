@@ -286,7 +286,7 @@ export class UsfmTokenizer {
     return tokens;
   }
 
-  detokenize(tokens: Iterable<UsfmToken>, tokensHaveWhitespace = false): string {
+  detokenize(tokens: Iterable<UsfmToken>, tokensHaveWhitespace = false, isFragment = false): string {
     let prevToken: UsfmToken | undefined = undefined;
     let usfm = '';
     let inBook = false;
@@ -373,23 +373,25 @@ export class UsfmTokenizer {
       prevToken = token;
     }
 
-    // Make sure begins without space or CR/LF
-    if (usfm.length > 0 && usfm.startsWith(' ')) {
-      usfm = usfm.substring(1);
-    }
-    if (usfm.length > 0 && usfm.startsWith('\r')) {
-      usfm = usfm.substring(2);
-    }
+    if (!isFragment) {
+      // Make sure begins without space or CR/LF
+      if (usfm.length > 0 && usfm.startsWith(' ')) {
+        usfm = usfm.substring(1);
+      }
+      if (usfm.length > 0 && usfm.startsWith('\r')) {
+        usfm = usfm.substring(2);
+      }
 
-    // Make sure ends without space and with a CR/LF
-    if (usfm.length > 0 && usfm.endsWith(' ')) {
-      usfm = usfm.substring(0, usfm.length - 1);
-    }
-    if (usfm.length > 0 && !usfm.endsWith('\n')) {
-      usfm += '\r\n';
-    }
-    if (usfm.length > 0 && usfm.endsWith(' \r\n')) {
-      usfm = usfm.substring(0, usfm.length - 3) + usfm.substring(usfm.length - 2);
+      // Make sure ends without space and with a CR/LF
+      if (usfm.length > 0 && usfm.endsWith(' ')) {
+        usfm = usfm.substring(0, usfm.length - 1);
+      }
+      if (usfm.length > 0 && !usfm.endsWith('\n')) {
+        usfm += '\r\n';
+      }
+      if (usfm.length > 0 && usfm.endsWith(' \r\n')) {
+        usfm = usfm.substring(0, usfm.length - 3) + usfm.substring(usfm.length - 2);
+      }
     }
     return usfm;
   }
