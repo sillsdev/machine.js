@@ -286,7 +286,7 @@ export class UsfmTokenizer {
     return tokens;
   }
 
-  detokenize(tokens: Iterable<UsfmToken>, tokensHaveWhitespace = false, isFragment = false): string {
+  detokenize(tokens: Iterable<UsfmToken>, tokensHaveWhitespace = false, isFullDocument = true): string {
     let prevToken: UsfmToken | undefined = undefined;
     let usfm = '';
     let inBook = false;
@@ -373,7 +373,7 @@ export class UsfmTokenizer {
       prevToken = token;
     }
 
-    if (!isFragment) {
+    if (isFullDocument) {
       // Make sure begins without space or CR/LF
       if (usfm.length > 0 && usfm.startsWith(' ')) {
         usfm = usfm.substring(1);
