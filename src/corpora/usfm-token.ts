@@ -49,13 +49,26 @@ export class UsfmToken {
     return attribute?.value ?? '';
   }
 
+  setAttributes(attributes: UsfmAttribute[], defaultAttributeName?: string): void;
   setAttributes(
     attributesValue: string,
     defaultAttributeName: string | undefined,
     text: string,
+    preserveWhitespace?: boolean,
+  ): string | undefined;
+  setAttributes(
+    attributesValue: string | UsfmAttribute[],
+    defaultAttributeName?: string,
+    text?: string,
     preserveWhitespace = false,
   ): string | undefined {
-    if (attributesValue.length === 0 || this.marker == null) {
+    if (Array.isArray(attributesValue)) {
+      this._attributes = attributesValue;
+      this._defaultAttributeName = defaultAttributeName;
+      return;
+    }
+
+    if (attributesValue.length === 0 || this.marker == null || text == null) {
       return undefined;
     }
 
