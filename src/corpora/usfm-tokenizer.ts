@@ -11,13 +11,28 @@ export enum RtlReferenceOrder {
 
 const RTL_VERSE_REGEX = /[\u200E\u200F]*(\d+\w?)[\u200E\u200F]*([\p{P}\p{S}])[\u200E\u200F]*(?=\d)/u;
 
+export enum UsfmPreserveWhitespaceMode {
+  None,
+  All,
+  TextOnly,
+}
+
 export class UsfmTokenizer {
   constructor(
     public readonly stylesheet: UsfmStylesheet,
     public readonly rtlReferenceOrder: RtlReferenceOrder = RtlReferenceOrder.NotSet,
   ) {}
 
-  tokenize(usfm: string, preserveWhitespace = false, startLineNumber = 1, startColumnNumber = 1): readonly UsfmToken[] {
+  tokenize(
+    usfm: string,
+    preserveWhitespace: boolean | UsfmPreserveWhitespaceMode = false,
+    startLineNumber = 1,
+    startColumnNumber = 1,
+  ): readonly UsfmToken[] {
+    if (typeof preserveWhitespace === 'boolean') {
+      preserveWhitespace = preserveWhitespace ? UsfmPreserveWhitespaceMode.All : UsfmPreserveWhitespaceMode.None;
+    }
+
     const tokens: UsfmToken[] = [];
 
     let index = 0; // Current position
@@ -41,13 +56,15 @@ export class UsfmTokenizer {
       const ch = usfm[index];
       if (ch != '\\') {
         let text = usfm.substring(index, nextMarkerIndex);
-        if (!preserveWhitespace) {
+        if (preserveWhitespace === UsfmPreserveWhitespaceMode.None) {
           text = regularizeSpaces(text);
+        } else if (preserveWhitespace === UsfmPreserveWhitespaceMode.TextOnly) {
+          text = text.replace(/(\r?\n)+/g, ' ');
         }
 
         const [attributeToken, attrText] = this.handleAttributes(
           usfm,
-          preserveWhitespace,
+          preserveWhitespace === UsfmPreserveWhitespaceMode.All,
           tokens,
           nextMarkerIndex,
           text,
@@ -93,7 +110,7 @@ export class UsfmTokenizer {
 
         if (isNonsemanticWhitespace(ch)) {
           // Preserve whitespace if needed, otherwise skip
-          if (!preserveWhitespace) {
+          if (preserveWhitespace !== UsfmPreserveWhitespaceMode.All) {
             index++;
           }
           break;
@@ -123,7 +140,7 @@ export class UsfmTokenizer {
       }
 
       // Multiple whitespace after non-end marker is ok
-      if (!marker.endsWith('*') && !preserveWhitespace) {
+      if (!marker.endsWith('*') && preserveWhitespace !== UsfmPreserveWhitespaceMode.All) {
         while (index < usfm.length && isNonsemanticWhitespace(usfm[index])) {
           index++;
         }
@@ -142,7 +159,7 @@ export class UsfmTokenizer {
       switch (tag.styleType) {
         case UsfmStyleType.Character:
           if ((tag.textProperties & UsfmTextProperties.Verse) == UsfmTextProperties.Verse) {
-            const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace);
+            const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace === UsfmPreserveWhitespaceMode.All);
             index = nextIndex;
             tokens.push(new UsfmToken(UsfmTokenType.Verse, marker, undefined, undefined, data, lineNum, colNum));
           } else {
@@ -155,11 +172,11 @@ export class UsfmTokenizer {
         case UsfmStyleType.Paragraph:
           // Handle verse special case
           if ((tag.textProperties & UsfmTextProperties.Chapter) == UsfmTextProperties.Chapter) {
-            const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace);
+            const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace === UsfmPreserveWhitespaceMode.All);
             index = nextIndex;
             tokens.push(new UsfmToken(UsfmTokenType.Chapter, marker, undefined, undefined, data, lineNum, colNum));
           } else if ((tag.textProperties & UsfmTextProperties.Book) == UsfmTextProperties.Book) {
-            const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace);
+            const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace === UsfmPreserveWhitespaceMode.All);
             index = nextIndex;
             tokens.push(new UsfmToken(UsfmTokenType.Book, marker, undefined, undefined, data, lineNum, colNum));
           } else {
@@ -170,7 +187,7 @@ export class UsfmTokenizer {
           break;
 
         case UsfmStyleType.Note: {
-          const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace);
+          const [nextIndex, data] = getNextWord(usfm, index, preserveWhitespace === UsfmPreserveWhitespaceMode.All);
           index = nextIndex;
           tokens.push(new UsfmToken(UsfmTokenType.Note, marker, undefined, endMarker, data, lineNum, colNum));
           break;
@@ -245,7 +262,7 @@ export class UsfmTokenizer {
     // will match. For example, "\p test\p here" requires a space
     // after "test". Also, "\p \em test\em*\p here" requires a space
     // token inserted after \em*
-    if (!preserveWhitespace) {
+    if (preserveWhitespace !== UsfmPreserveWhitespaceMode.All) {
       for (let i = 1; i < tokens.length; i++) {
         // If requires newline (verses do, except when after '(' or '[')
         if (

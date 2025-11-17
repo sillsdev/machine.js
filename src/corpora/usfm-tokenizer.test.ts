@@ -5,7 +5,7 @@ import { describe, expect, it } from 'vitest';
 import { USFM_TEST_PROJECT_PATH } from './test-helpers';
 import { createUsfmStylesheet } from './usfm-stylesheet';
 import { UsfmTokenType } from './usfm-token';
-import { UsfmTokenizer } from './usfm-tokenizer';
+import { UsfmPreserveWhitespaceMode, UsfmTokenizer } from './usfm-tokenizer';
 
 describe('UsfmTokenizer', () => {
   it('tokenize', async () => {
@@ -53,6 +53,19 @@ describe('UsfmTokenizer', () => {
     const tokenizer = new UsfmTokenizer(await createUsfmStylesheet());
     const tokens = tokenizer.tokenize(usfm);
     expect(tokens.length).toEqual(13);
+  });
+
+  it('tokenize preserve text whitespace', async () => {
+    const usfm = `\\id MAT - Test
+\\c 1
+\\p
+\\v 1   In the beginning   God created the heaven and the earth. 
+`;
+    const tokenizer = new UsfmTokenizer(await createUsfmStylesheet());
+    const tokens = tokenizer.tokenize(usfm, UsfmPreserveWhitespaceMode.TextOnly);
+    expect(tokens.length).toEqual(6);
+    expect(tokens[1].text).toEqual('- Test ');
+    expect(tokens[5].text).toEqual('In the beginning   God created the heaven and the earth.  ');
   });
 });
 

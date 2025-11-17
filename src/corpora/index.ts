@@ -16,4 +16,4 @@ export {
   UsfmTextType,
 } from './usfm-tag';
 export { UsfmToken, UsfmTokenType } from './usfm-token';
-export { RtlReferenceOrder, UsfmTokenizer } from './usfm-tokenizer';
+export { RtlReferenceOrder, UsfmPreserveWhitespaceMode, UsfmTokenizer } from './usfm-tokenizer';
