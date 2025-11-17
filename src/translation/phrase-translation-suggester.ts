@@ -144,12 +144,8 @@ export class PhraseTranslationSuggester implements TranslationSuggester {
       let table: number[] | undefined;
       for (const suggestion of suggestions) {
         if (suggestion.targetWordIndices.length >= newSuggestion.targetWordIndices.length) {
-          if (newSuggestionsWords == null) {
-            newSuggestionsWords = newSuggestion.targetWords;
-          }
-          if (table == null) {
-            table = computeKmpTable(newSuggestionsWords);
-          }
+          newSuggestionsWords ??= newSuggestion.targetWords;
+          table ??= computeKmpTable(newSuggestionsWords);
           if (isSubsequence(table, newSuggestionsWords, suggestion.targetWords)) {
             isDuplicate = true;
             break;

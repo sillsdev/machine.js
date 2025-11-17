@@ -47,9 +47,7 @@ export class UsfmParser {
     } else {
       this.tokens = usfm;
     }
-    if (versification == null) {
-      versification = ScrVers.English;
-    }
+    versification ??= ScrVers.English;
     this.state = new UsfmParserState(this.stylesheet, versification, this.tokens);
   }
 

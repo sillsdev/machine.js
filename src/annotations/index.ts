@@ -1,1 +1,1 @@
-export { createRange, Range } from './range';
+export { createRange, type Range } from './range';

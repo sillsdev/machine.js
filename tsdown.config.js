@@ -1,5 +1,4 @@
-import { defineConfig } from 'tsup';
-import { fixImportsPlugin } from 'esbuild-fix-imports-plugin';
+import { defineConfig } from 'tsdown';
 
 export default defineConfig({
   entry: ['src/**/*.ts', '!src/**/*.test.ts', '!src/**/test-helpers.ts'],
@@ -7,8 +6,7 @@ export default defineConfig({
   clean: true,
   format: ['esm', 'cjs'],
   tsconfig: 'tsconfig.build.json',
-  bundle: false,
+  unbundle: true,
   sourcemap: false,
-  shims: true,
-  esbuildPlugins: [fixImportsPlugin()],
+  shims: false,
 });
