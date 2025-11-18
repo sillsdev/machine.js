@@ -106,5 +106,9 @@
     "LICENSE",
     "README.md",
     "dist/**/*"
-  ]
+  ],
+  "volta": {
+    "node": "24.11.1",
+    "npm": "11.6.2"
+  }
 }
